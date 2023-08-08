@@ -1,0 +1,59 @@
+const { app, BrowserWindow, ipcMain, nativeTheme, nativeImage, Notification } = require('electron')
+const path = require('path')
+const package = require('./package.json')
+
+// If development environment
+const env = process.env.NODE_ENV || 'development';
+if (env === 'development') {
+	require('electron-reload')(__dirname, {
+		electron: path.join(__dirname, 'node_modules', '.bin', 'electron'),
+		hardResetMethod: 'exit'
+	});
+}
+
+function createWindow() {
+	const win = new BrowserWindow({
+		width: 400,
+		height: 400,
+		webPreferences: {
+			preload: path.join(__dirname, 'preload.js'),
+			nodeIntegration: true
+		},
+		center: true,
+		resizable: true,
+		maximizable: true,
+		fullscreenable: true,
+	})
+
+	win.loadFile('index.html')
+
+	// open devtools
+	win.webContents.openDevTools()
+}
+
+// App launch
+app.whenReady().then(() => {
+	// Set Dock Image
+	const image = nativeImage.createFromPath('./timer.png')
+	app.dock.setIcon(image)
+
+	// Handle test function
+	ipcMain.handle('pingTome', () => 'pong')
+
+	// Call notification
+	new Notification({
+		title: 'Hi there!',
+		body: 'Your software is up to date!'
+	}).show()
+
+	// Mac: Activate window again on closed.
+	app.on('activate', () => {
+		if (BrowserWindow.getAllWindows().length === 0) createWindow()
+	})
+}).then(createWindow)
+
+
+// On Close
+app.on('window-all-closed', () => {
+	if (process.platform !== 'darwin') app.quit()
+})

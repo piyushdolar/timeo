@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Timeo - Local managed platform</title>
+		<link href="./assets/css/bootstrap.min.css" rel="stylesheet" />
+		<link href="./assets/css/fontawesome.all.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="./styles.css" />
+	</head>
+	<body class="container my-2 bg-white">
+		<!-- Header -->
+		<div class="d-flex mb-3">
+			<small class="fw-light">Internet connection: <span class="text-success" id="i-connection-status"></span></small>
+			<small class="text-body-secondary ms-auto fw-light"><small>Timeo v1.0</small></small>
+		</div>
+
+		<!-- Body -->
+		<figure class="mb-3">
+			<blockquote class="blockquote">
+				<div class="display-6">Leaving in: 09:99:99</div>
+			</blockquote>
+			<figcaption class="blockquote-footer">Remaining time to complete it</figcaption>
+		</figure>
+
+		<!-- <figure>
+			<blockquote class="blockquote d-flex">
+				<div class="display-6">Check in: 08:05:00</div>
+				<button type="button" class="btn btn-outline-primary btn-sm ms-auto px-4">Edit</button>
+			</blockquote>
+			<figcaption class="blockquote-footer">Checkin time in the morning</figcaption>
+		</figure>
+
+		<hr />
+
+		<div class="input-group mb-3">
+			<span class="input-group-text" id="basic-addon3">Checkout In</span>
+			<input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3 basic-addon4" value="04:00:00" disabled />
+		</div> -->
+
+		<div class="input-group mb-3">
+			<span class="input-group-text" id="basic-addon3">Check In</span>
+			<input type="text" class="form-control" aria-label="Recipient's username" aria-describedby="button-addon2" value="08:05:00" disabled />
+			<button class="btn btn-outline-secondary" type="button" id="button-addon2">Edit</button>
+		</div>
+
+		<!-- Renderer file -->
+		<script src="./renderer.js"></script>
+		<script src="./assets/js/bootstrap.bundle.min.js"></script>
+	</body>
+</html>

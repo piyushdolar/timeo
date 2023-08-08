@@ -1,0 +1,27 @@
+{
+	"devDependencies": {
+		"@electron-forge/cli": "^6.2.1",
+		"@electron-forge/maker-deb": "^6.2.1",
+		"@electron-forge/maker-rpm": "^6.2.1",
+		"@electron-forge/maker-squirrel": "^6.2.1",
+		"@electron-forge/maker-zip": "^6.2.1",
+		"@electron-forge/plugin-auto-unpack-natives": "^6.2.1",
+		"electron": "^25.3.1",
+		"electron-reload": "^2.0.0-alpha.1"
+	},
+	"name": "timeo",
+	"version": "1.0.0",
+	"main": "main.js",
+	"scripts": {
+		"start": "electron-forge start",
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"package": "electron-forge package",
+		"make": "electron-forge make"
+	},
+	"author": "",
+	"license": "ISC",
+	"description": "",
+	"dependencies": {
+		"electron-squirrel-startup": "^1.0.0"
+	}
+}
