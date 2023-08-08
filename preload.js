@@ -1,8 +1,11 @@
 const { contextBridge, ipcRenderer } = require('electron')
+const package = require('./package.json')
 
 // Test function
-contextBridge.exposeInMainWorld('versions', {
-	ping: () => ipcRenderer.invoke('pingTome')
+contextBridge.exposeInMainWorld('preload', {
+	ping: () => ipcRenderer.invoke('pingTome'),
+	name: package.name,
+	version: package.version,
 })
 
 // Footer text
