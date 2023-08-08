@@ -40,4 +40,17 @@ module.exports = {
 			config: {},
 		},
 	],
+	publishers: [
+		{
+			name: '@electron-forge/publisher-github',
+			config: {
+				repository: {
+					owner: 'piyushdolar',
+					name: 'timeo'
+				},
+				prerelease: false,
+				draft: true
+			}
+		}
+	]
 };
