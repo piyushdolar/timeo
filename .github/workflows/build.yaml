@@ -11,13 +11,13 @@ on:
 #       - created
 
 jobs:
-    publish_on_mac:
+    publish-on-mac:
         runs-on: macos-latest
         steps:
             - uses: actions/checkout@v2
             - uses: actions/setup-node@master
               with:
-                  node-version: 14
+                  node-version: 16
             - name: install dependencies
               run: npm install
             - name: publish
@@ -25,13 +25,13 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: npm run publish
 
-    publish_on_win:
+    publish-on-win:
         runs-on: windows-latest
         steps:
             - uses: actions/checkout@v2
             - uses: actions/setup-node@master
               with:
-                  node-version: 14
+                  node-version: 16
             - name: install dependencies
               run: npm install
             - name: publish

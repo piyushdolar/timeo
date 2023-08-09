@@ -1,4 +1,7 @@
 const package = require('./package.json')
+const config = require("dotenv");
+const env = config.config()
+
 module.exports = {
 	packagerConfig: {
 		asar: true,
@@ -62,7 +65,7 @@ module.exports = {
 				prerelease: true,
 				draft: true,
 				tagPrefix: package.version,
-				authToken: process.env.GITHUB_TOKEN
+				authToken: env.GITHUB_TOKEN
 			}
 		}
 	]
