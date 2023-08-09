@@ -27,7 +27,7 @@ jobs:
 
             # Install packages
             - name: install dependencies
-              run: npm ci
+              run: npm install
 
             # Publish packages
             - name: publish
