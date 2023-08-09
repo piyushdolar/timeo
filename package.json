@@ -1,18 +1,9 @@
 {
-	"devDependencies": {
-		"@electron-forge/cli": "^6.2.1",
-		"@electron-forge/maker-deb": "^6.2.1",
-		"@electron-forge/maker-rpm": "^6.2.1",
-		"@electron-forge/maker-squirrel": "^6.2.1",
-		"@electron-forge/maker-zip": "^6.2.1",
-		"@electron-forge/plugin-auto-unpack-natives": "^6.2.1",
-		"@electron-forge/publisher-github": "^6.2.1",
-		"@electron-forge/maker-dmg": "^6.2.1",
-		"electron": "^25.3.1",
-		"electron-reload": "^2.0.0-alpha.1"
-	},
 	"name": "timeo",
-	"version": "1.0.0",
+	"description": "Time management tool for you",
+	"version": "1.0.1",
+	"author": "piyushdolar",
+	"license": "ISC",
 	"main": "main.js",
 	"scripts": {
 		"start": "electron-forge start",
@@ -21,10 +12,20 @@
 		"make": "electron-forge make",
 		"publish": "electron-forge publish"
 	},
-	"author": "",
-	"license": "ISC",
-	"description": "",
+	"devDependencies": {
+		"@electron-forge/cli": "^6.2.1",
+		"@electron-forge/maker-deb": "^6.2.1",
+		"@electron-forge/maker-dmg": "^6.2.1",
+		"@electron-forge/maker-rpm": "^6.2.1",
+		"@electron-forge/maker-squirrel": "^6.2.1",
+		"@electron-forge/maker-zip": "^6.2.1",
+		"@electron-forge/plugin-auto-unpack-natives": "^6.2.1",
+		"@electron-forge/publisher-github": "^6.2.1",
+		"electron": "^25.3.1",
+		"electron-reload": "^2.0.0-alpha.1"
+	},
 	"dependencies": {
+		"@electron-forge/maker-wix": "^6.2.1",
 		"electron-squirrel-startup": "^1.0.0"
 	}
 }

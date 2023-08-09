@@ -33,7 +33,7 @@ function createWindow() {
 // App launch
 app.whenReady().then(() => {
 	// Set Dock Image
-	const image = nativeImage.createFromPath('./timer.png')
+	const image = nativeImage.createFromPath('./assets/images/timer.png')
 	app.dock.setIcon(image)
 
 	// Handle test function

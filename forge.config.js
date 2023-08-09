@@ -1,12 +1,16 @@
+const package = require('./package.json')
 module.exports = {
 	packagerConfig: {
 		asar: true,
-		osxNotarize: {
+		// ------------------------------------------------
+		// Keep disable unless untill you wants to sign it.
+		// ------------------------------------------------
+		/* osxNotarize: {
 			tool: 'notarytool',
 			appleId: process.env.APPLE_ID,
 			appleIdPassword: process.env.APPLE_PASSWORD,
 			teamId: process.env.APPLE_TEAM_ID
-		}
+		 } */
 	},
 	rebuildConfig: {},
 	makers: [
@@ -29,8 +33,15 @@ module.exports = {
 		{
 			name: '@electron-forge/maker-dmg',
 			config: {
-				background: './assets/dmg-background.png',
+				background: './assets/images/dmg-background.png',
 				format: 'ULFO'
+			}
+		},
+		{
+			name: '@electron-forge/maker-wix',
+			config: {
+				language: 1033,
+				manufacturer: 'Timeo & co'
 			}
 		}
 	],
@@ -48,8 +59,10 @@ module.exports = {
 					owner: 'piyushdolar',
 					name: 'timeo'
 				},
-				prerelease: false,
-				draft: true
+				prerelease: true,
+				draft: true,
+				tagPrefix: package.version,
+				authToken: process.env.GITHUB_TOKEN
 			}
 		}
 	]
