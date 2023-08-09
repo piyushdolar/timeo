@@ -62,7 +62,7 @@ module.exports = {
 					owner: 'piyushdolar',
 					name: 'timeo'
 				},
-				prerelease: true,
+				prerelease: false,
 				draft: true,
 				tagPrefix: package.version,
 				authToken: env.GITHUB_TOKEN
