@@ -63,7 +63,7 @@ module.exports = {
 					name: 'timeo'
 				},
 				prerelease: false,
-				draft: true,
+				draft: false,
 				// tagPrefix: package.version,
 				authToken: env.GITHUB_TOKEN
 			}
