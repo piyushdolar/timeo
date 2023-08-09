@@ -34,3 +34,10 @@ jobs:
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: npm run publish
+
+            # Attach artifact to release tag
+            - name: upload binaries
+              uses: actions/upload-artifact@v3
+              with:
+                  name: binaries
+                  path: build/bin
