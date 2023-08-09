@@ -1,4 +1,4 @@
-const package = require('./package.json')
+// const package = require('./package.json')
 const config = require("dotenv");
 const env = config.config()
 
@@ -64,7 +64,7 @@ module.exports = {
 				},
 				prerelease: false,
 				draft: true,
-				tagPrefix: package.version,
+				// tagPrefix: package.version,
 				authToken: env.GITHUB_TOKEN
 			}
 		}
