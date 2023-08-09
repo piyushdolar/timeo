@@ -1,7 +1,6 @@
 // Test function
 const test = async () => {
 	const response = await preload.ping()
-	console.log(preload)
 }
 test()
 
