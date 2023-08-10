@@ -1,3 +1,10 @@
+// Auto update the app
+require('update-electron-app')({
+	repo: 'piyushdolar/timeo',
+	updateInterval: '1 hour',
+})
+
+// Import electron
 const { app, BrowserWindow, ipcMain, nativeTheme, nativeImage, Notification } = require('electron')
 const path = require('path')
 

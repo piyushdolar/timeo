@@ -63,7 +63,7 @@ module.exports = {
 					name: 'timeo'
 				},
 				prerelease: false,
-				draft: false,
+				draft: false, // true will create draft release which needs to manually release from github
 				// tagPrefix: package.version,
 				authToken: env.GITHUB_TOKEN
 			}
