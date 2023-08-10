@@ -1,34 +1,34 @@
 {
-  "name": "timeo",
-  "description": "Time management tool for you",
-  "version": "1.2.1",
-  "author": "piyushdolar",
-  "license": "ISC",
-  "main": "main.js",
-  "repository": "piyushdolar/timeo",
-  "scripts": {
-    "start": "electron-forge start",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
-    "publish": "electron-forge publish"
-  },
-  "devDependencies": {
-    "@electron-forge/cli": "^6.3.0",
-    "@electron-forge/maker-deb": "^6.3.0",
-    "@electron-forge/maker-dmg": "^6.3.0",
-    "@electron-forge/maker-rpm": "^6.3.0",
-    "@electron-forge/maker-squirrel": "^6.3.0",
-    "@electron-forge/maker-wix": "^6.3.0",
-    "@electron-forge/maker-zip": "^6.3.0",
-    "@electron-forge/plugin-auto-unpack-natives": "^6.3.0",
-    "@electron-forge/publisher-github": "^6.3.0",
-    "electron": "^25.3.1",
-    "electron-reload": "^2.0.0-alpha.1"
-  },
-  "dependencies": {
-    "dotenv": "^16.3.1",
-    "electron-squirrel-startup": "^1.0.0",
-    "update-electron-app": "^2.0.1"
-  }
+	"name": "timeo",
+	"description": "Time management tool for you",
+	"version": "1.2.2",
+	"author": "piyushdolar",
+	"license": "ISC",
+	"main": "main.js",
+	"repository": "piyushdolar/timeo",
+	"scripts": {
+		"start": "electron-forge start",
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"package": "electron-forge package",
+		"make": "electron-forge make",
+		"publish": "electron-forge publish"
+	},
+	"devDependencies": {
+		"@electron-forge/cli": "^6.3.0",
+		"@electron-forge/maker-deb": "^6.3.0",
+		"@electron-forge/maker-dmg": "^6.3.0",
+		"@electron-forge/maker-rpm": "^6.3.0",
+		"@electron-forge/maker-squirrel": "^6.3.0",
+		"@electron-forge/maker-wix": "^6.3.0",
+		"@electron-forge/maker-zip": "^6.3.0",
+		"@electron-forge/plugin-auto-unpack-natives": "^6.3.0",
+		"@electron-forge/publisher-github": "^6.3.0",
+		"electron": "^25.3.1",
+		"electron-reload": "^2.0.0-alpha.1"
+	},
+	"dependencies": {
+		"dotenv": "^16.3.1",
+		"electron-squirrel-startup": "^1.0.0",
+		"update-electron-app": "^2.0.1"
+	}
 }
