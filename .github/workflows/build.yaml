@@ -20,8 +20,6 @@ jobs:
     # Building for mac
     publish-on-mac:
         runs-on: macos-latest
-        env:
-            NODE_ENV: production
         steps:
             # Checkout
             - uses: actions/checkout@v2
@@ -51,8 +49,6 @@ jobs:
     # Building for windows
     publish-on-windows:
         runs-on: windows-latest
-        env:
-            NODE_ENV: production
         steps:
             # Checkout
             - uses: actions/checkout@v2
