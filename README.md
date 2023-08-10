@@ -34,7 +34,13 @@ git push && git push --tags
 
 # Make (`npm run make`)
 
-This command used for to locally create executable to test in system
+This command used for to locally create executable to test in system, also can use this below commands to make it cross-platform build
+
+````
+npx electron-forge import (This will update forge.config.js file)
+npm run make -- --platform win32
+npm run make -- --platform linux
+npm run make -- --platform darwin```
 
 # Publish (`npm run publish`)
 
@@ -46,7 +52,8 @@ This will create executable file and deploy new release to the github repo, can 
 
 `npm run publish` will auto create github tag and run the actions of workflow to deploy it as release (this work same as `git tag v1.0.0` command and `git push --tag`)
 
-# electron-builder -mwl
+# electron-builder -mwl (alternative)
 
 This is another command to build all application in one platform but it'll required the certificate to sign in
 `export CSC_IDENTITY_AUTO_DISCOVERY=false`
+````

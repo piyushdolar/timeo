@@ -1,20 +1,8 @@
-// const package = require('./package.json')
 const config = require("dotenv");
 const env = config.config()
-
 module.exports = {
 	packagerConfig: {
 		asar: true,
-		icon: '/assets/images/timer' // no file extension required
-		// ------------------------------------------------
-		// Keep disable unless untill you wants to sign it.
-		// ------------------------------------------------
-		/* osxNotarize: {
-			tool: 'notarytool',
-			appleId: process.env.APPLE_ID,
-			appleIdPassword: process.env.APPLE_PASSWORD,
-			teamId: process.env.APPLE_TEAM_ID
-		 } */
 	},
 	rebuildConfig: {},
 	makers: [
@@ -24,15 +12,7 @@ module.exports = {
 		},
 		{
 			name: '@electron-forge/maker-zip',
-			// platforms: ['windows'],
-		},
-		{
-			name: '@electron-forge/maker-deb',
-			config: {},
-		},
-		{
-			name: '@electron-forge/maker-rpm',
-			config: {},
+			platforms: ['darwin'],
 		},
 		{
 			name: '@electron-forge/maker-dmg',
@@ -42,12 +22,13 @@ module.exports = {
 			}
 		},
 		{
-			name: '@electron-forge/maker-wix',
-			config: {
-				language: 1033,
-				manufacturer: 'Timeo & co'
-			}
-		}
+			name: '@electron-forge/maker-deb',
+			config: {},
+		},
+		{
+			name: '@electron-forge/maker-rpm',
+			config: {},
+		},
 	],
 	plugins: [
 		{
@@ -65,7 +46,6 @@ module.exports = {
 				},
 				prerelease: false,
 				draft: false, // true will create draft release which needs to manually release from github
-				// tagPrefix: package.version,
 				authToken: env.GITHUB_TOKEN
 			}
 		}

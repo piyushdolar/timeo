@@ -1,3 +1,5 @@
+if (require('electron-squirrel-startup')) app.quit();
+
 // Auto update the app
 require('update-electron-app')({
 	repo: 'piyushdolar/timeo',
