@@ -18,7 +18,9 @@ jobs:
     #             os: [macos-latest] # ubuntu-latest, windows-latest
 
     # Building for mac
-    publish-on-mac:
+    mac:
+        env:
+            NODE_ENV: 'production'
         runs-on: macos-latest
         steps:
             # Checkout
@@ -47,7 +49,9 @@ jobs:
             #       path: build/bin
 
     # Building for windows
-    publish-on-windows:
+    windows:
+        env:
+            NODE_ENV: 'production'
         runs-on: windows-latest
         steps:
             # Checkout
