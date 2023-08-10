@@ -5,7 +5,7 @@ require('update-electron-app')({
 })
 
 // Import electron
-const { app, BrowserWindow, ipcMain, nativeTheme, nativeImage, Notification } = require('electron')
+const { app, BrowserWindow, ipcMain, nativeImage, Notification } = require('electron')
 const path = require('path')
 
 // If development environment
@@ -30,7 +30,6 @@ function createWindow() {
 		maximizable: true,
 		fullscreenable: true,
 	})
-
 	win.loadFile('index.html')
 
 	// open devtools

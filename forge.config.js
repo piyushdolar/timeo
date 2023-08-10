@@ -5,6 +5,7 @@ const env = config.config()
 module.exports = {
 	packagerConfig: {
 		asar: true,
+		icon: '/assets/images/timer' // no file extension required
 		// ------------------------------------------------
 		// Keep disable unless untill you wants to sign it.
 		// ------------------------------------------------
@@ -23,7 +24,7 @@ module.exports = {
 		},
 		{
 			name: '@electron-forge/maker-zip',
-			platforms: ['darwin'],
+			// platforms: ['windows'],
 		},
 		{
 			name: '@electron-forge/maker-deb',

@@ -32,4 +32,21 @@ git push && git push --tags
 }
 ```
 
-Now wait for the workflow to start and monitor events.
+# Make (`npm run make`)
+
+This command used for to locally create executable to test in system
+
+# Publish (`npm run publish`)
+
+This command used to available public access in github release
+
+To publish we're using `npm run publish` which is required the GITHUB_TOKEN to set and GitHub URL to set in forge.config.js file
+
+This will create executable file and deploy new release to the github repo, can see under the release section to verify.
+
+`npm run publish` will auto create github tag and run the actions of workflow to deploy it as release (this work same as `git tag v1.0.0` command and `git push --tag`)
+
+# electron-builder -mwl
+
+This is another command to build all application in one platform but it'll required the certificate to sign in
+`export CSC_IDENTITY_AUTO_DISCOVERY=false`
