@@ -3,7 +3,8 @@ if (require('electron-squirrel-startup')) app.quit();
 // Auto update the app
 require('update-electron-app')({
 	repo: 'piyushdolar/timeo',
-	updateInterval: '1 hour',
+	updateInterval: '5 minutes',
+	notifyUser: true
 })
 
 // Import electron
