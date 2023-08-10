@@ -1,4 +1,4 @@
-name: Build/release
+name: Deploy
 # Trigger: On push
 on:
     push:
@@ -19,8 +19,6 @@ jobs:
 
     # Building for mac
     mac:
-        env:
-            NODE_ENV: 'production'
         runs-on: macos-latest
         steps:
             # Checkout
@@ -39,6 +37,7 @@ jobs:
             - name: publish
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  NODE_ENV: 'production'
               run: npm run publish
 
             # Attach artifact to release tag
@@ -50,8 +49,6 @@ jobs:
 
     # Building for windows
     windows:
-        env:
-            NODE_ENV: 'production'
         runs-on: windows-latest
         steps:
             # Checkout
@@ -70,6 +67,7 @@ jobs:
             - name: publish
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  NODE_ENV: 'production'
               run: npm run publish
 
             # Attach artifact to release tag
