@@ -40,11 +40,11 @@ jobs:
               run: npm run publish
 
             # Attach artifact to release tag
-            - name: upload binaries
-              uses: actions/upload-artifact@v3
-              with:
-                  name: binaries
-                  path: build/bin
+            # - name: upload binaries
+            #   uses: actions/upload-artifact@v3
+            #   with:
+            #       name: binaries
+            #       path: build/bin
 
     # Building for windows
     publish-on-windows:
@@ -69,8 +69,8 @@ jobs:
               run: npm run publish
 
             # Attach artifact to release tag
-            - name: upload binaries
-              uses: actions/upload-artifact@v3
-              with:
-                  name: binaries
-                  path: build/bin
+            # - name: upload binaries
+            #   uses: actions/upload-artifact@v3
+            #   with:
+            #       name: binaries
+            #       path: build/bin
