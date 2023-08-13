@@ -1,4 +1,7 @@
-if (require('electron-squirrel-startup')) app.quit();
+// THIS SCRIPT ONLY RUNS ON SERVER SIDE.
+
+// For windows
+// if (require('electron-squirrel-startup')) app.quit();
 
 // Auto update the app
 require('update-electron-app')({
@@ -8,8 +11,13 @@ require('update-electron-app')({
 })
 
 // Import electron
-const { app, BrowserWindow, ipcMain, nativeImage, Notification } = require('electron')
+const { app, BrowserWindow, ipcMain, nativeImage, Notification, powerMonitor } = require('electron')
 const path = require('path')
+
+// Log
+const { Log } = require('./log')
+const log = new Log()
+const moment = require('moment')
 
 // If development environment
 const env = process.env.NODE_ENV || 'development';
@@ -20,33 +28,68 @@ if (env === 'development') {
 	});
 }
 
-function createWindow() {
-	const win = new BrowserWindow({
-		width: 400,
-		height: 400,
+// Window - create for system
+async function createWindow() {
+	const win = await new BrowserWindow({
+		width: 600, // 1000 dev
+		height: 625, // 800 dev
 		webPreferences: {
 			preload: path.join(__dirname, 'preload.js'),
 			nodeIntegration: true
 		},
 		center: true,
-		resizable: true,
-		maximizable: true,
-		fullscreenable: true,
+		resizable: env === 'development' ? true : false, // true dev
+		maximizable: env === 'development' ? true : false, // true dev
+		fullscreenable: env === 'development' ? true : false, // true dev
 	})
-	win.loadFile('index.html')
+	await win.loadFile('index.html')
+
+	// First time opening send logs
+	win.webContents.send('activity', await log.read())
+
+	// Screen - lock
+	powerMonitor.on('lock-screen', async (v) => {
+		await log.write(
+			'System logout',
+			moment()
+		)
+		win.webContents.send('activity', await log.read())
+	})
+	// Screen - unlock
+	powerMonitor.on('unlock-screen', async (v) => {
+		await log.write(
+			'System login',
+			moment()
+		)
+		win.webContents.send('activity', await log.read())
+	})
+
+	// Screen - shutdown
+	powerMonitor.on('shutdown', async (v) => {
+		await log.write(
+			'System shutdown',
+			moment()
+		)
+		win.webContents.send('activity', await log.read())
+	})
 
 	// open devtools
-	win.webContents.openDevTools()
+	if (env === 'development') {
+		// win.webContents.openDevTools()
+	}
 }
 
-// App launch
+// Window - is ready
 app.whenReady().then(() => {
+	// Invoke: Read log from file
+	// ipcMain.handle('activity', async () => {
+	// 	const logs = await log.read()
+	// 	return logs
+	// })
+
 	// Set Dock Image
 	const image = nativeImage.createFromPath('./assets/images/timer.png')
 	app.dock.setIcon(image)
-
-	// Handle test function
-	ipcMain.handle('pingTome', () => 'pong')
 
 	// Call notification
 	new Notification({
@@ -61,7 +104,7 @@ app.whenReady().then(() => {
 }).then(createWindow)
 
 
-// On Close
+// Window - On Close
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') app.quit()
 })

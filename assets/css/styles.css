@@ -2,7 +2,17 @@
 	color-scheme: light dark;
 }
 
-@media (prefers-color-scheme: dark) {
+body {
+	background-image: url('../images/background.jpg');
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	background-size: cover;
+}
+
+.vh-50 {
+	height: 65vh;
+}
+/* @media (prefers-color-scheme: dark) {
 	body {
 		background: #333;
 		color: white;
@@ -14,4 +24,4 @@
 		background: #ddd;
 		color: black;
 	}
-}
+} */
