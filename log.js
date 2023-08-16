@@ -11,6 +11,9 @@ const packageJson = require('./package.json')
 const moment = require('moment')
 const date = moment().format('DDMMYYYY')
 
+// Path
+const path = require('path')
+
 // Class
 class Log {
 	#dir = homedir + '/timeo'
@@ -30,11 +33,12 @@ class Log {
 		this.write('App opened', moment())
 	}
 
-	read() {
+	read(date) {
 		return new Promise((resolve, reject) => {
 			try {
-				fs.readFile(this.#filename, (err, data) => {
-					if (err) console.error('Can not read the file')
+				const fileName = date ? path.join(this.#dir, `${date}.log`) : this.#filename
+				fs.readFile(fileName, (err, data) => {
+					if (err) this.write('Log file generated', moment())
 					// console.log("log.js in", JSON.parse(data))
 					resolve(JSON.parse(data))
 				})
@@ -44,19 +48,43 @@ class Log {
 		}).then(resolved => resolved).catch(error => console.error('log.js:', error))
 	}
 
-	async writeIn(data) {
-		return await new Promise((resolve, reject) => {
+	history(fileDate) {
+		return new Promise((resolve, reject) => {
 			try {
-				resolve(fs.writeFile(this.#filename, JSON.stringify(data), (err) => {
-					if (err) {
-						console.error('Can not write in the file')
-					}
-				}))
-			} catch (e) {
-				reject(false)
-			}
+				fs.readdir(this.#dir, async (err, files) => {
+					if (err) console.error('ERR', err)
 
-		}).then(v => true).catch(e => false)
+					let fileDates = []
+					let fileContent = []
+
+					files.forEach(async file => {
+						if (path.extname(file).toLowerCase() === '.log') {
+							const parsed = path.parse(file)
+							fileDates.push(parsed)
+							if (parsed.name === fileDate) {
+								const filePath = path.join(this.#dir, file);
+								fileContent = JSON.parse(fs.readFileSync(filePath))
+							}
+						}
+					})
+
+					resolve({
+						dates: fileDates,
+						fileContent: fileContent
+					})
+				});
+			} catch (error) {
+				reject('Can not read file', error)
+			}
+		}).then(resolved => resolved).catch(error => console.error('log.js:history:', error))
+	}
+
+	writeIn(data) {
+		fs.writeFile(this.#filename, JSON.stringify(data), (err) => {
+			if (err) {
+				console.error('Can not write in the file')
+			}
+		})
 	}
 
 	async write(eventType, eventTime) {
@@ -67,18 +95,26 @@ class Log {
 		const $this = this
 		let array = []
 
-		return await fs.readFile($this.#filename, async function (err, data) {
+		await fs.readFile($this.#filename, async function (err, data) {
 			// file exist
 			if (!err && data) {
 				let fileData = await JSON.parse(data)
 				await fileData.push(object)
-				return await $this.writeIn(fileData)
+				$this.writeIn(fileData)
 			} else {
 				// file not exist
 				await array.push(object)
-				return await $this.writeIn(array)
+				$this.writeIn(array)
 			}
 		});
+		return object
+	}
+
+	format(eventType, eventTime) {
+		return [{
+			eventType,
+			eventTime
+		}]
 	}
 }
 

@@ -4,23 +4,30 @@
 		<meta charset="UTF-8" />
 		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>Timeo - Local managed platform</title>
+		<title>Timeo - Time managed platform</title>
 		<link href="./assets/css/bootstrap.min.css" rel="stylesheet" />
 		<link href="./assets/css/fontawesome.all.min.css" rel="stylesheet" />
 		<link rel="stylesheet" type="text/css" href="./assets/css/styles.css" />
 	</head>
 	<body class="container my-2 bg-white">
 		<!-- Header -->
+		<!---------------------------
+				INFO
+		---------------------------->
 		<div class="d-flex">
 			<small class="fw-light">Internet connection: <span class="text-success" id="i-connection-status"></span></small>
 			<small class="text-body-secondary ms-auto fw-light"><small id="version-tag">Timeo v*</small></small>
 		</div>
-		<div class="d-flex mb-3">
-			<small class="fw-light" id="date-time"></small>
+		<div class="d-flex mb-2">
+			<small class="fw-light" id="date-time">Loading...</small>
 		</div>
 
+		<!---------------------------
+				LEAVING TIME
+		---------------------------->
+
 		<!-- Body -->
-		<figure class="mb-3">
+		<figure class="mb-2">
 			<blockquote class="blockquote">
 				<div class="display-6">Leaving in: <span id="remaining-time">00h 00m 00s</span></div>
 			</blockquote>
@@ -42,7 +49,10 @@
 			<input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3 basic-addon4" value="04:00:00" disabled />
 		</div> -->
 
-		<div class="input-group mb-3">
+		<!---------------------------
+				FORM
+		---------------------------->
+		<div class="input-group mb-2">
 			<!-- <span class="input-group-text" id="basic-addon3">Check In</span> -->
 			<button class="btn btn-outline-secondary" type="button" id="update-left-button" disabled>Check in</button>
 			<input type="text" id="update-input" class="form-control w-25" aria-label="Recipient's username" aria-describedby="button-addon2" value="08:00:00" disabled />
@@ -51,12 +61,15 @@
 				<option value="pm">PM</option>
 			</select>
 			<button class="btn btn-outline-secondary" type="button" id="update-right-button">Edit</button>
+			<!-- <button class="btn btn-outline-primary text-uppercase" type="button" disabled>report</button> -->
 		</div>
 
-		<!-- Reports -->
+		<!---------------------------
+				REPORT TABLE
+		---------------------------->
 		<div class="card vh-50 overflow-auto">
 			<div class="card-body">
-				<h5 class="card-title">Today's Activities</h5>
+				<h5 class="card-title d-flex justify-content-between">Today's Activities <span class="badge text-bg-primary" type="button" id="open-report-window">View History</span></h5>
 				<h6 class="card-subtitle mb-2 text-body-secondary">Refer below log list for detailed activity.</h6>
 				<div class="card-text">
 					<table id="log-table" class="table table-hover table-sm">

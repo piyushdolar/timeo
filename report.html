@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Timeo - Report history</title>
+		<link href="./assets/css/bootstrap.min.css" rel="stylesheet" />
+		<link href="./assets/css/fontawesome.all.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="./assets/css/styles.css" />
+	</head>
+	<body class="vh-75 my-2">
+		<div class="container">
+			<div class="card bg-white">
+				<div class="card-body">
+					<div class="d-flex justify-content-between">
+						<span>
+							<h5 class="card-title">History</h5>
+							<h6 class="card-subtitle mb-2 text-body-secondary">Refer below log list for detailed activity for each day.</h6>
+						</span>
+						<span>
+							<select id="select-date" class="form-select w-auto"></select>
+						</span>
+					</div>
+					<div class="card-text">
+						<table id="log-table" class="table table-hover table-sm">
+							<thead>
+								<tr>
+									<th scope="col">Event date</th>
+									<th scope="col">Event type</th>
+									<th scope="col">Event time</th>
+								</tr>
+							</thead>
+							<tbody id="log-table-body" />
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Renderer file -->
+		<script type="text/javascript" src="./assets/js/moment.min.js"></script>
+		<script type="text/javascript" src="./assets/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="./report.js"></script>
+	</body>
+</html>

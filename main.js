@@ -20,15 +20,20 @@ const log = new Log()
 const moment = require('moment')
 
 // If development environment
-const env = process.env.NODE_ENV || 'development';
+const env = process.env.NODE_ENV || 'production';
+let devtool = false
 if (env === 'development') {
+	devtool = false // open devtool
 	require('electron-reload')(__dirname, {
 		electron: path.join(__dirname, 'node_modules', '.bin', 'electron'),
 		hardResetMethod: 'exit'
 	});
 }
 
-// Window - create for system
+/* ---------------------------------------------
+	WINDOW - Main window
+	index.html, renderer.js, preload.js,
+---------------------------------------------- */
 async function createWindow() {
 	const win = await new BrowserWindow({
 		width: 600, // 1000 dev
@@ -44,67 +49,116 @@ async function createWindow() {
 	})
 	await win.loadFile('index.html')
 
-	// First time opening send logs
-	win.webContents.send('activity', await log.read())
-
 	// Screen - lock
-	powerMonitor.on('lock-screen', async (v) => {
-		await log.write(
+	powerMonitor.on('lock-screen', async () => {
+		win.webContents.send('activity-read-logs', JSON.stringify(await log.write(
 			'System logout',
 			moment()
-		)
-		win.webContents.send('activity', await log.read())
+		)))
 	})
 	// Screen - unlock
-	powerMonitor.on('unlock-screen', async (v) => {
-		await log.write(
+	powerMonitor.on('unlock-screen', async () => {
+		win.webContents.send('activity-read-logs', JSON.stringify(await log.write(
 			'System login',
 			moment()
-		)
-		win.webContents.send('activity', await log.read())
+		)))
+
+		// Check in for first time
+		const timeNow = moment();
+		const beforeTime = moment('07:55 am', 'hh:mm a');
+		const afterTime = moment('08:30 am', 'hh:mm a');
+		if (timeNow.isBetween(beforeTime, afterTime)) {
+			win.webContents.send('first-time-check-in', true)
+		}
 	})
 
 	// Screen - shutdown
-	powerMonitor.on('shutdown', async (v) => {
-		await log.write(
+	powerMonitor.on('shutdown', async () => {
+		win.webContents.send('activity-read-logs', JSON.stringify(await log.write(
 			'System shutdown',
 			moment()
-		)
-		win.webContents.send('activity', await log.read())
+		)))
+	})
+
+	// Call notification
+	ipcMain.on('send-notification', async (event, object) => {
+		new Notification({
+			title: object.title,
+			body: object.body
+		}).show()
+	})
+
+	// Set Custom Log
+	ipcMain.on('set-log', async (event, eventType) => {
+		win.webContents.send('activity-read-logs', JSON.stringify(
+			await log.write(eventType, moment())
+		))
 	})
 
 	// open devtools
-	if (env === 'development') {
-		// win.webContents.openDevTools()
+	if (devtool) {
+		win.webContents.openDevTools()
 	}
 }
 
-// Window - is ready
-app.whenReady().then(() => {
-	// Invoke: Read log from file
-	// ipcMain.handle('activity', async () => {
-	// 	const logs = await log.read()
-	// 	return logs
-	// })
 
+
+/* ---------------------------------------------------
+	WINDOW - Ready
+	When all windows are ready invoke it
+---------------------------------------------------- */
+app.whenReady().then(() => {
 	// Set Dock Image
 	const image = nativeImage.createFromPath('./assets/images/timer.png')
 	app.dock.setIcon(image)
-
-	// Call notification
-	new Notification({
-		title: 'Hi there!',
-		body: 'Your software is up to date!'
-	}).show()
 
 	// Mac: Activate window again on closed.
 	app.on('activate', () => {
 		if (BrowserWindow.getAllWindows().length === 0) createWindow()
 	})
+
+	// Invoke: First time read log from file
+	ipcMain.handle('activity-logs', async () => await log.read())
+
+	// Invoke: History logs
+	ipcMain.handle('history-logs', async (event, date) => {
+		return await log.history(date)
+	})
 }).then(createWindow)
 
 
-// Window - On Close
+/* ---------------------------------------------------
+	WINDOW - Report window
+	report.html, report.js, report-preload.js
+---------------------------------------------------- */
+ipcMain.handle('open-report-window', async () => {
+	const reportWindow = new BrowserWindow({
+		width: 600, // 1000 dev
+		height: 625, // 800 dev
+		webPreferences: {
+			preload: path.join(__dirname, 'report-preload.js'),
+			nodeIntegration: true
+		},
+		center: true,
+		resizable: env === 'development' ? true : false, // true dev
+		maximizable: env === 'development' ? true : false, // true dev
+		fullscreenable: env === 'development' ? true : false, // true dev
+	});
+
+	const filePath = path.join(__dirname, 'report.html');
+	reportWindow.loadFile(filePath);
+
+	// open devtools
+	if (devtool) {
+		reportWindow.webContents.openDevTools()
+	}
+})
+
+
+/* ---------------------------------------------------
+	WINDOW - Minimize window
+	Minimize window when clicked on close
+---------------------------------------------------- */
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') app.quit()
 })
