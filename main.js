@@ -109,7 +109,7 @@ async function createWindow() {
 ---------------------------------------------------- */
 app.whenReady().then(() => {
 	// Set Dock Image
-	const image = nativeImage.createFromPath('./assets/images/timer.png')
+	const image = nativeImage.createFromPath('./assets/images/icon.png')
 	app.dock.setIcon(image)
 
 	// Mac: Activate window again on closed.
