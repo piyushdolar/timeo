@@ -2,6 +2,28 @@
 
 An electron based repository for time management for office
 
+# Features
+
+**Notification:**
+
+-   You’ll get notified for your checkout time at 30 minutes, 15 minutes, and 5 minutes before times run out.
+
+**Manual time:**
+
+-   You also can adjust arriving time to start the your own timer.
+
+**Auto start timer:**
+
+-   Although it’ll start auto check in upon your arrival between 7:55am to 8:30am, after arriving 8:15am you will needs to setup your custom check in time.
+
+**Today’s activity:**
+
+-   You’ll get each activities throughout your day such as Screen lock, Screen unlock.
+
+**Reports:**
+
+-   You can see your post days history report.
+
 ## Issues
 
 1. Generate GITHUB_TOKEN from personal access token in github settings to use in local during development to push code into repo.
