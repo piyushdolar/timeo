@@ -88,12 +88,12 @@ setInterval(function () {
 // --------------------------------------------
 const updateLeftButton = document.getElementById("update-left-button")
 const updateInput = document.getElementById("update-input")
-const updateAmpm = document.getElementById("update-ampm")
+const updateAmPm = document.getElementById("update-am-pm")
 let updateRightButton = document.getElementById("update-right-button");
 
 // Update initial time
 updateInput.value = moment().format('hh:mm:ss')
-updateAmpm.value = moment().format('a')
+updateAmPm.value = moment().format('a')
 
 // Click - on cancel/exit
 function closeUpdateBox() {
@@ -103,14 +103,14 @@ function closeUpdateBox() {
 	updateLeftButton.classList.remove('text-white')
 
 	updateInput.setAttribute('disabled', true)
-	updateAmpm.setAttribute('disabled', true)
+	updateAmPm.setAttribute('disabled', true)
 
 	updateRightButton.textContent = 'Edit'
 	updateRightButton.classList.remove('btn-primary')
 	updateRightButton.classList.remove('text-white')
 }
-async function setTime(time = moment().format('hh:mm:ss'), ampm = moment().format('a')) {
-	const initialTime = moment(time + ' ' + ampm, 'hh:mm:ss a');
+async function setTime(time = moment().format('hh:mm:ss'), amPm = moment().format('a')) {
+	const initialTime = moment(time + ' ' + amPm, 'hh:mm:ss a');
 	let totalHour = 9
 	// Check if saturday
 	if (moment().day() === 6) totalHour = 4;
@@ -126,7 +126,7 @@ updateRightButton.addEventListener("click", () => {
 		updateRightButton.classList.add('btn-primary')
 		updateRightButton.classList.add('text-white')
 
-		updateAmpm.removeAttribute('disabled')
+		updateAmPm.removeAttribute('disabled')
 		updateInput.removeAttribute('disabled')
 		updateInput.focus()
 
@@ -145,7 +145,7 @@ updateRightButton.addEventListener("click", () => {
 		document.cookie = "manualTime=" + updateInput.value + "; expires=" + expiryTime + "; path=/;";
 
 		// Set time to start now
-		setTime(updateInput.value, updateAmpm.value)
+		setTime(updateInput.value, updateAmPm.value)
 
 		// Set custom time
 		window.preload.log('Custom check-in')

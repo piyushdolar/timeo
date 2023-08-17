@@ -79,7 +79,7 @@ async function createWindow() {
 
 	// On close
 	win.on('close', function (event) {
-		if (!application.isQuiting) {
+		if (!win.isQuiting && process.platform === 'win32') {
 			event.preventDefault();
 			win.hide();
 		}
@@ -154,7 +154,7 @@ app.whenReady().then(() => {
 	})
 
 	// Set Dock Image
-	app.dock.setIcon(icon)
+	if (process.platform === 'darwin') app.dock.setIcon(icon)
 
 	// Create window
 	createWindow()
