@@ -59,17 +59,26 @@ async function createWindow() {
 	tray = new Tray(nativeImage.createFromPath('./assets/images/icon-tray.png'))
 	const trayContextMenu = Menu.buildFromTemplate([
 		{
-			label: 'Show App',
+			label: 'Open Timeo',
 			click: () => win.show()
 		},
 		{
-			label: 'Quit', click: () => {
+			label: 'Quit',
+			click: () => {
 				app.isQuiting = true
 				app.quit()
 			}
+		},
+		{
+			label: 'About',
+			role: 'about'
 		}
 	])
 	tray.setContextMenu(trayContextMenu)
+
+	tray.on('click', () => {
+		win.show()
+	})
 
 	// On minimize
 	win.on('minimize', function (event) {
