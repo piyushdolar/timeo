@@ -33,7 +33,7 @@ if (env === 'development') {
 // Dock image initialize
 let tray = null
 let isQuiting;
-const icon = nativeImage.createFromPath('./assets/images/icon.png')
+const icon = nativeImage.createFromPath('./assets/images/icon-tray.png')
 
 /* ---------------------------------------------
 	WINDOW - Main window
@@ -54,9 +54,10 @@ async function createWindow() {
 		icon: icon
 	})
 	await win.loadFile('index.html')
+	win.removeMenu()
 
 	// Tray Icon
-	tray = new Tray(nativeImage.createFromPath('./assets/images/icon-tray.png'))
+	tray = new Tray(icon)
 	const trayContextMenu = Menu.buildFromTemplate([
 		{
 			label: 'Open Timeo',
