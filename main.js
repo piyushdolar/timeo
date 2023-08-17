@@ -65,7 +65,7 @@ async function createWindow() {
 		{
 			label: 'Quit',
 			click: () => {
-				app.isQuiting = true
+				isQuiting = true
 				app.quit()
 			}
 		},
@@ -88,9 +88,10 @@ async function createWindow() {
 
 	// On close
 	win.on('close', function (event) {
-		if (!win.isQuiting && process.platform === 'win32') {
+		if (!isQuiting && process.platform === 'win32') {
 			event.preventDefault();
 			win.hide();
+			event.returnValue = false;
 		}
 		return false;
 	});
