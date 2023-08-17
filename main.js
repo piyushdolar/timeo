@@ -1,6 +1,6 @@
 // THIS SCRIPT ONLY RUNS ON SERVER SIDE.
 // Import electron
-const { app, BrowserWindow, ipcMain, nativeImage, Notification, powerMonitor } = require('electron')
+const { app, BrowserWindow, ipcMain, Tray, Menu, Notification, powerMonitor, nativeImage } = require('electron')
 const path = require('path')
 
 // Log
@@ -30,6 +30,11 @@ if (env === 'development') {
 	});
 }
 
+// Dock image initialize
+let tray = null
+let isQuiting;
+const icon = nativeImage.createFromPath('./assets/images/icon.png')
+
 /* ---------------------------------------------
 	WINDOW - Main window
 	index.html, renderer.js, preload.js,
@@ -46,8 +51,40 @@ async function createWindow() {
 		resizable: env === 'development' ? true : false, // true dev
 		maximizable: env === 'development' ? true : false, // true dev
 		fullscreenable: env === 'development' ? true : false, // true dev
+		icon: icon
 	})
 	await win.loadFile('index.html')
+
+	// Tray Icon
+	tray = new Tray(nativeImage.createFromPath('./assets/images/icon-tray.png'))
+	const trayContextMenu = Menu.buildFromTemplate([
+		{
+			label: 'Show App',
+			click: () => win.show()
+		},
+		{
+			label: 'Quit', click: () => {
+				app.isQuiting = true
+				app.quit()
+			}
+		}
+	])
+	tray.setContextMenu(trayContextMenu)
+
+	// On minimize
+	win.on('minimize', function (event) {
+		event.preventDefault();
+		win.hide();
+	});
+
+	// On close
+	win.on('close', function (event) {
+		if (!application.isQuiting) {
+			event.preventDefault();
+			win.hide();
+		}
+		return false;
+	});
 
 	// Screen - lock
 	powerMonitor.on('lock-screen', async () => {
@@ -108,15 +145,6 @@ async function createWindow() {
 	When all windows are ready invoke it
 ---------------------------------------------------- */
 app.whenReady().then(() => {
-	// Set Dock Image
-	const image = nativeImage.createFromPath('./assets/images/icon.png')
-	app.dock.setIcon(image)
-
-	// Mac: Activate window again on closed.
-	app.on('activate', () => {
-		if (BrowserWindow.getAllWindows().length === 0) createWindow()
-	})
-
 	// Invoke: First time read log from file
 	ipcMain.handle('activity-logs', async () => await log.read())
 
@@ -124,7 +152,18 @@ app.whenReady().then(() => {
 	ipcMain.handle('history-logs', async (event, date) => {
 		return await log.history(date)
 	})
-}).then(createWindow)
+
+	// Set Dock Image
+	app.dock.setIcon(icon)
+
+	// Create window
+	createWindow()
+
+	// Mac: Activate window again on closed.
+	app.on('activate', () => {
+		if (BrowserWindow.getAllWindows().length === 0) createWindow()
+	})
+})
 
 
 /* ---------------------------------------------------
