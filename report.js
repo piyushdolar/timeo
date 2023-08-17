@@ -44,7 +44,7 @@ function renderTableData(date, logs) {
 function getLogs(date = moment().format('DDMMYYYY')) {
 	new Promise((resolve, reject) => {
 		try {
-			resolve(reportPreload.history(date))
+			resolve(preload.history(date))
 		} catch (error) {
 			reject(error)
 		}

@@ -8,6 +8,7 @@ contextBridge.exposeInMainWorld('preload', {
 	version: package.version,
 	activity: () => ipcRenderer.invoke('activity-logs'),
 	openReportWindow: () => ipcRenderer.invoke('open-report-window'),
+	history: (date) => ipcRenderer.invoke('history-logs', date), // for report.js file
 	listenActivity: (callback) => ipcRenderer.on('activity-read-logs', callback),
 	listenFirstTimeCheckIn: (callback) => ipcRenderer.on('first-time-check-in', callback),
 	notification: (title, body) => ipcRenderer.send('send-notification', { title, body }),
