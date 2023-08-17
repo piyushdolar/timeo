@@ -1,15 +1,4 @@
 // THIS SCRIPT ONLY RUNS ON SERVER SIDE.
-
-// For windows
-// if (require('electron-squirrel-startup')) app.quit();
-
-// Auto update the app
-require('update-electron-app')({
-	repo: 'piyushdolar/timeo',
-	updateInterval: '5 minutes',
-	notifyUser: true
-})
-
 // Import electron
 const { app, BrowserWindow, ipcMain, nativeImage, Notification, powerMonitor } = require('electron')
 const path = require('path')
@@ -18,6 +7,17 @@ const path = require('path')
 const { Log } = require('./log')
 const log = new Log()
 const moment = require('moment')
+
+// For windows
+// run this as early in the main process as possible
+if (require('electron-squirrel-startup')) app.quit();
+
+// Auto update the app
+require('update-electron-app')({
+	repo: 'piyushdolar/timeo',
+	updateInterval: '5 minutes',
+	notifyUser: true
+})
 
 // If development environment
 const env = process.env.NODE_ENV || 'production';

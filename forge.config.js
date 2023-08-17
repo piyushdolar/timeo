@@ -10,7 +10,9 @@ module.exports = {
 		{
 			name: '@electron-forge/maker-squirrel',
 			config: {
-				setupIcon: './assets/images/icon.ico'
+				setupIcon: './assets/images/icon.ico',
+				loadingGif: './assets/images/loading.gif',
+				iconUrl: 'https://github.com/piyushdolar/timeo/blob/main/assets/images/icon.ico',
 			},
 		},
 		{
