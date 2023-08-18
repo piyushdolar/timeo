@@ -23,21 +23,6 @@ jobs:
             - name: Install packages
               run: npm install
 
-            # Generate the changelog
-            - name: Generate Changelog
-              run: |
-                  npm install github-changelog-generator
-                  npx github-changelog-generator
-              working-directory: ${{ github.workspace }}
-
-            # Extract changelog content and update workflow or release notes
-            - name: Update Changelog in Workflow
-              run: |
-                  changelog=$(cat CHANGELOG.md)
-                  sed "s#{{changelog}}#${changelog}#" .github/workflows/build.yml > tmp_build.yml
-                  mv tmp_build.yml .github/workflows/build.yaml
-              working-directory: ${{ github.workspace }}
-
             - name: Publish packages
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
