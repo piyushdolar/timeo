@@ -35,7 +35,7 @@ jobs:
               run: |
                   changelog=$(cat CHANGELOG.md)
                   sed "s#{{changelog}}#${changelog}#" .github/workflows/build.yml > tmp_build.yml
-                  mv tmp_build.yml .github/workflows/build.yml
+                  mv tmp_build.yml .github/workflows/build.yaml
               working-directory: ${{ github.workspace }}
 
             - name: Publish packages
