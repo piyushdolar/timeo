@@ -4,75 +4,27 @@ on:
     push:
         tags:
             - '**'
-# Trigger: On created
-# on:
-#   release:
-#     types:
-#       - created
-
 jobs:
-    # release:
-    #     runs-on: ${{ matrix.os }}
-    #     strategy:
-    #         matrix:
-    #             os: [macos-latest] # ubuntu-latest, windows-latest
+    build-and-publish:
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [macos-latest, windows-latest]
 
-    # Building for mac
-    mac:
-        runs-on: macos-latest
         steps:
-            # Checkout
-            - uses: actions/checkout@v2
+            - name: Checkout
+              uses: actions/checkout@v2
 
-            # Setup node
-            - uses: actions/setup-node@v2
+            - name: Setup node
+              uses: actions/setup-node@v2
               with:
                   node-version: '16'
 
-            # Install packages
-            - name: install dependencies
+            - name: Install packages
               run: npm install
 
-            # Publish packages
-            - name: publish
+            - name: Publish packages
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   NODE_ENV: 'production'
               run: npm run publish
-
-            # Attach artifact to release tag
-            # - name: upload binaries
-            #   uses: actions/upload-artifact@v3
-            #   with:
-            #       name: binaries
-            #       path: build/bin
-
-    # Building for windows
-    windows:
-        runs-on: windows-latest
-        steps:
-            # Checkout
-            - uses: actions/checkout@v2
-
-            # Setup node
-            - uses: actions/setup-node@v2
-              with:
-                  node-version: '16'
-
-            # Install packages
-            - name: install dependencies
-              run: npm install
-
-            # Publish packages
-            - name: publish
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  NODE_ENV: 'production'
-              run: npm run publish
-
-            # Attach artifact to release tag
-            # - name: upload binaries
-            #   uses: actions/upload-artifact@v3
-            #   with:
-            #       name: binaries
-            #       path: build/bin
