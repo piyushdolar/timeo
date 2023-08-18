@@ -34,7 +34,8 @@ jobs:
             - name: Update Changelog in Workflow
               run: |
                   changelog=$(cat CHANGELOG.md)
-                  sed -i "s#{{changelog}}#$changelog#" .github/workflows/build.yml
+                  sed "s#{{changelog}}#${changelog}#" .github/workflows/build.yml > tmp_build.yml
+                  mv tmp_build.yml .github/workflows/build.yml
               working-directory: ${{ github.workspace }}
 
             - name: Publish packages
