@@ -33,28 +33,40 @@ class Log {
 		this.write('App opened', moment())
 	}
 
-	config(config) {
+	async config(config) {
 		const file = `${this.#dir}/config.json`
-		return new Promise((resolve, reject) => {
-			try {
-				fs.readFile(file, async (err, data) => {
-					if (err) {
-						fs.writeFile(file, "{}", (err) => {
-							if (err) console.error('Can not write in the file')
-						})
-					} else if (config) {
-						let fileData = await JSON.parse(data)
-						fileData[config.name] = await config.value
-						fs.writeFile(file, JSON.stringify(fileData), (err, data) => {
-							if (err) console.error('Can not write in the file')
-						})
-					}
-					resolve(data ? JSON.parse(data) : {})
-				})
-			} catch (error) {
-				reject('Can not read file', error)
+		try {
+			let fileData = {};
+
+			// Check file exist
+			const fileExists = await fs.promises.access(file)
+				.then(() => true)
+				.catch(() => false);
+
+			// Create file if not exist
+			if (!fileExists) {
+				await fs.promises.writeFile(file, JSON.stringify(fileData, null, 2), 'utf-8');
 			}
-		}).then(resolved => resolved).catch(error => console.error('log.js:', error))
+
+			// Read the existing JSON data from the file
+			const existingData = await fs.promises.readFile(file, 'utf-8');
+			if (existingData) {
+				fileData = JSON.parse(existingData);
+			}
+
+			// Update fileData with the new config
+			if (config && config.name && config.value) {
+				fileData[config.name] = config.value;
+			}
+
+			// Write the updated data back to the file
+			await fs.promises.writeFile(file, JSON.stringify(fileData, null, 2), 'utf-8');
+
+			return fileData;
+		} catch (error) {
+			console.error('Error:', error);
+			return {};
+		}
 	}
 
 	read(date) {
@@ -63,7 +75,6 @@ class Log {
 				const fileName = date ? path.join(this.#dir, `${date}.log`) : this.#filename
 				fs.readFile(fileName, (err, data) => {
 					if (err) this.write('Log file generated', moment())
-					// console.log("log.js in", JSON.parse(data))
 					resolve(JSON.parse(data))
 				})
 			} catch (error) {

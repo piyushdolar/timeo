@@ -34,8 +34,8 @@ if (env === 'development') {
 let tray;
 let isQuiting;
 const defaultWindowSetting = {
-	width: 600, // 1000 dev
-	height: 625, // 800 dev
+	width: env === 'development' ? 800 : 500,
+	height: 625,
 	webPreferences: {
 		devTools: devtool,
 		preload: path.join(__dirname, 'preload.js'),
@@ -149,8 +149,14 @@ async function createWindow() {
 	})
 
 	// Set Cookie
-	ipcMain.on('set-cookie', (event, biscuit) => {
-		log.config(biscuit)
+	ipcMain.on('set-cookie', async (event, biscuit) => {
+		if (biscuit.name === 'manual-time') {
+			await log.config({
+				name: 'today',
+				value: moment().format('YYYY-MM-DD HH:mm:ss')
+			})
+		}
+		await log.config(biscuit)
 	})
 
 	// open devtools
@@ -185,7 +191,8 @@ app.whenReady().then(async () => {
 	// Get Cookie
 	const cookie = await log.config()
 	if (cookie['manual-time']) {
-		win.webContents.send('set-check-in', cookie['manual-time'])
+		const today = moment(cookie.today, 'YYYY-MM-DD HH:mm:ss')
+		if (today.isSame(moment(), 'day')) win.webContents.send('set-check-in', cookie['manual-time'])
 	}
 
 	// Mac: Activate window again on closed.

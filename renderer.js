@@ -1,5 +1,5 @@
 // Initial loading
-console.log(preload.name + ' v' + preload.version)
+console.info(preload.name + ' v' + preload.version)
 
 // Internet connection status
 let connectionStatus = document.getElementById('i-connection-status')
@@ -19,17 +19,10 @@ const remainingLetters = preload.name.slice(1)
 const capitalizedWord = firstLetterCap + remainingLetters
 versionTag.innerHTML = capitalizedWord + ' v' + preload.version
 
-// Show live time clock
-// setInterval(() => {
-// 	let dateTime = document.getElementById('date-time')
-// 	dateTime.textContent = moment().format("dddd, MMMM Do YYYY, h:mm:ss a")
-// }, 1000)
-
-
 // --------------------------------------------
 // Countdown timer
 // --------------------------------------------
-let startTime = moment('08:00:00 am', 'hh:mm:ss a');
+// let startTime = moment('08:00:00 am', 'hh:mm:ss a');
 let endTime = moment('05:00:00 pm', 'hh:mm:ss a');
 let flag = {
 	check30: true,
@@ -41,7 +34,6 @@ setInterval(function () {
 	let dateTime = document.getElementById('date-time')
 	dateTime.textContent = moment().format("dddd, MMMM Do YYYY, h:mm:ss a")
 
-	// console.log(moment().isBetween(startTime, endTime))
 	const currentTime = moment()
 
 	// Calculate the time differences
@@ -109,15 +101,22 @@ function closeUpdateBox() {
 	updateRightButton.classList.remove('btn-primary')
 	updateRightButton.classList.remove('text-white')
 }
-async function setTime(time = moment().format('hh:mm:ss'), amPm = moment().format('a')) {
-	const initialTime = moment(time + ' ' + amPm, 'hh:mm:ss a');
-	let totalHour = 9
+
+// Set custom time
+async function setTime(manualTime = moment().format('hh:mm:ss a')) {
+	// Set cookie
+	window.preload.cookie('manual-time', manualTime)
+
+	const initialTime = moment(manualTime, 'hh:mm:ss a');
+
 	// Check if saturday
+	let totalHour = 9
 	if (moment().day() === 6) totalHour = 4;
-	const timeAfter9Hours = initialTime.clone().add(totalHour, 'hours');
-	startTime = initialTime
-	endTime = timeAfter9Hours
+
+	const timeAfterTotalHours = initialTime.clone().add(totalHour, 'hours');
+	endTime = timeAfterTotalHours
 }
+
 // Click - on update button
 updateRightButton.addEventListener("click", () => {
 	// Edit input
@@ -138,14 +137,10 @@ updateRightButton.addEventListener("click", () => {
 
 	// Update time
 	else if (updateRightButton.textContent === 'Update') {
-		// set cookie to use it
-		const d = new Date();
-		d.setTime(d.getTime() + (30 * 1000)); // 24 * 60 * 60 * 1000
-		const expiryTime = d.toUTCString()
-		document.cookie = "manualTime=" + updateInput.value + "; expires=" + expiryTime + "; path=/;";
+		const manualTime = `${updateInput.value} ${updateAmPm.value}`
 
 		// Set time to start now
-		setTime(updateInput.value, updateAmPm.value)
+		setTime(manualTime)
 
 		// Set custom time
 		window.preload.log('Custom check-in')
@@ -212,10 +207,14 @@ new Promise((resolve, reject) => {
 
 
 // --------------------------------------------
-// First time check In
+// Listen First time check In / Existing time
 // --------------------------------------------
-window.preload.listenFirstTimeCheckIn((event, isValid) => {
-	isValid ? setTime(moment().format('hh:mm:ss'), 'am') : ''
+// window.preload.listenSetTime((event, time) => setTime(time))
+window.preload.listenSetTime((event, time) => {
+	const splitTime = time.split(' ');
+	updateInput.value = splitTime[0]
+	updateAmPm.value = splitTime[1]
+	setTime(time)
 })
 
 
