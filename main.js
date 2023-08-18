@@ -39,7 +39,8 @@ const defaultWindowSetting = {
 	webPreferences: {
 		devTools: devtool,
 		preload: path.join(__dirname, 'preload.js'),
-		nodeIntegration: true
+		nodeIntegration: true,
+		partition: 'persist:timeo'
 	},
 	center: true,
 	resizable: env === 'development' ? true : false, // true dev
@@ -79,7 +80,8 @@ async function createWindow() {
 	])
 	tray.setContextMenu(trayContextMenu)
 
-	tray.on('click', () => {
+	// On Tray icon click
+	tray.on('click', async () => {
 		win.show()
 	})
 
@@ -106,6 +108,7 @@ async function createWindow() {
 			moment()
 		)))
 	})
+
 	// Screen - unlock
 	powerMonitor.on('unlock-screen', async () => {
 		win.webContents.send('activity-read-logs', JSON.stringify(await log.write(
@@ -118,7 +121,7 @@ async function createWindow() {
 		const beforeTime = moment('07:55 am', 'hh:mm a');
 		const afterTime = moment('08:30 am', 'hh:mm a');
 		if (timeNow.isBetween(beforeTime, afterTime)) {
-			win.webContents.send('first-time-check-in', true)
+			win.webContents.send('set-check-in', timeNow)
 		}
 	})
 
@@ -145,10 +148,17 @@ async function createWindow() {
 		))
 	})
 
+	// Set Cookie
+	ipcMain.on('set-cookie', (event, biscuit) => {
+		log.config(biscuit)
+	})
+
 	// open devtools
 	if (devtool) {
 		win.webContents.openDevTools()
 	}
+
+	return win
 }
 
 
@@ -157,7 +167,7 @@ async function createWindow() {
 	WINDOW - Ready
 	When all windows are ready invoke it
 ---------------------------------------------------- */
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
 	// Invoke: First time read log from file
 	ipcMain.handle('activity-logs', async () => await log.read())
 
@@ -170,7 +180,13 @@ app.whenReady().then(() => {
 	if (process.platform === 'darwin') app.dock.setIcon(nativeImage.createFromPath('./assets/images/icon.png'))
 
 	// Create window
-	createWindow()
+	const win = await createWindow()
+
+	// Get Cookie
+	const cookie = await log.config()
+	if (cookie['manual-time']) {
+		win.webContents.send('set-check-in', cookie['manual-time'])
+	}
 
 	// Mac: Activate window again on closed.
 	app.on('activate', () => {

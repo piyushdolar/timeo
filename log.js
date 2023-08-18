@@ -33,6 +33,30 @@ class Log {
 		this.write('App opened', moment())
 	}
 
+	config(config) {
+		const file = `${this.#dir}/config.json`
+		return new Promise((resolve, reject) => {
+			try {
+				fs.readFile(file, async (err, data) => {
+					if (err) {
+						fs.writeFile(file, "{}", (err) => {
+							if (err) console.error('Can not write in the file')
+						})
+					} else if (config) {
+						let fileData = await JSON.parse(data)
+						fileData[config.name] = await config.value
+						fs.writeFile(file, JSON.stringify(fileData), (err, data) => {
+							if (err) console.error('Can not write in the file')
+						})
+					}
+					resolve(data ? JSON.parse(data) : {})
+				})
+			} catch (error) {
+				reject('Can not read file', error)
+			}
+		}).then(resolved => resolved).catch(error => console.error('log.js:', error))
+	}
+
 	read(date) {
 		return new Promise((resolve, reject) => {
 			try {

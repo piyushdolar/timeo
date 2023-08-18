@@ -10,9 +10,10 @@ contextBridge.exposeInMainWorld('preload', {
 	openReportWindow: () => ipcRenderer.invoke('open-report-window'),
 	history: (date) => ipcRenderer.invoke('history-logs', date), // for report.js file
 	listenActivity: (callback) => ipcRenderer.on('activity-read-logs', callback),
-	listenFirstTimeCheckIn: (callback) => ipcRenderer.on('first-time-check-in', callback),
+	listenSetTime: (callback) => ipcRenderer.on('set-check-in', callback),
 	notification: (title, body) => ipcRenderer.send('send-notification', { title, body }),
 	log: (eventType) => ipcRenderer.send('set-log', eventType),
+	cookie: (name, value) => ipcRenderer.send('set-cookie', { name, value }),
 })
 
 // Update to HTML element
