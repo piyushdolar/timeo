@@ -23,6 +23,17 @@ jobs:
             - name: Install packages
               run: npm install
 
+            # Generate the changelog
+            - name: Generate Changelog
+              run: github_changelog_generator
+
+            # Extract changelog content and update workflow or release notes
+            - name: Update Changelog in Workflow
+              run: |
+                  changelog=$(cat CHANGELOG.md)
+                  sed -i "s#{{changelog}}#$changelog#" .github/workflows/main.yml
+              working-directory: ${{ github.workspace }}
+
             - name: Publish packages
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
