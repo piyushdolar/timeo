@@ -32,7 +32,6 @@ if (env === 'development') {
 
 // Dock image initialize
 let tray;
-let isQuiting;
 const defaultWindowSetting = {
 	width: env === 'development' ? 800 : 500,
 	height: 625,
@@ -73,7 +72,7 @@ async function createWindow() {
 		{
 			label: 'Quit',
 			click: () => {
-				isQuiting = true
+				app.isQuiting = true
 				app.quit()
 			}
 		},
@@ -93,10 +92,9 @@ async function createWindow() {
 
 	// On close
 	win.on('close', function (event) {
-		if (!isQuiting && process.platform === 'win32') {
+		if (!app.isQuiting) {
 			event.preventDefault();
 			win.hide();
-			event.returnValue = false;
 		}
 		return false;
 	});
@@ -198,6 +196,7 @@ app.whenReady().then(async () => {
 	// Mac: Activate window again on closed.
 	app.on('activate', () => {
 		if (BrowserWindow.getAllWindows().length === 0) createWindow()
+		win.show()
 	})
 })
 
