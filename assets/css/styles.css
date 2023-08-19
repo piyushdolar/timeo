@@ -16,6 +16,10 @@ body {
 .fs-10 {
 	font-size: 10px;
 }
+
+.form-select-custom {
+	font-size: 12px;
+}
 /* @media (prefers-color-scheme: dark) {
 	body {
 		background: #333;

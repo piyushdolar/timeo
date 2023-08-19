@@ -14,6 +14,11 @@ function updateSelect(option) {
 
 // Render table
 function renderTableData(date, logs) {
+	// Add count
+	const logTableHead = document.getElementById('history-count')
+	logTableHead.innerText = logs.length
+
+	// Add logs
 	const logTableBody = document.getElementById('log-table-body')
 	logTableBody.innerHTML = ''
 
