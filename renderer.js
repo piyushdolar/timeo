@@ -221,7 +221,7 @@ window.preload.listenSetTime((event, time) => {
 // --------------------------------------------
 // Open new window - report history
 // --------------------------------------------
-let openReportWindow = document.getElementById("open-report-window");
-openReportWindow.addEventListener("click", () => {
-	window.preload.openReportWindow()
-})
+// let openReportWindow = document.getElementById("open-report-window");
+// openReportWindow.addEventListener("click", () => {
+// 	window.preload.openReportWindow()
+// })

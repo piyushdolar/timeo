@@ -205,17 +205,17 @@ app.whenReady().then(async () => {
 	WINDOW - Report window
 	report.html, report.js, report-preload.js
 ---------------------------------------------------- */
-ipcMain.handle('open-report-window', async () => {
-	const reportWindow = new BrowserWindow(defaultWindowSetting);
+// ipcMain.handle('open-report-window', async () => {
+// 	const reportWindow = new BrowserWindow(defaultWindowSetting);
 
-	const filePath = path.join(__dirname, 'report.html');
-	reportWindow.loadFile(filePath);
+// 	const filePath = path.join(__dirname, 'report.html');
+// 	reportWindow.loadFile(filePath);
 
-	// open devtools
-	if (devtool) {
-		reportWindow.webContents.openDevTools()
-	}
-})
+// 	// open devtools
+// 	if (devtool) {
+// 		reportWindow.webContents.openDevTools()
+// 	}
+// })
 
 
 /* ---------------------------------------------------
