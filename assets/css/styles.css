@@ -20,6 +20,14 @@ body {
 .form-select-custom {
 	font-size: 12px;
 }
+
+.card,
+.card table thead tr th,
+.card table tbody tr td {
+	background: transparent;
+	backdrop-filter: blur(2px);
+}
+
 /* @media (prefers-color-scheme: dark) {
 	body {
 		background: #333;
