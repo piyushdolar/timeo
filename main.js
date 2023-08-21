@@ -36,32 +36,37 @@ if (env === 'development') {
 // --------------------------------------------
 // Auto update the app
 // --------------------------------------------
-if (env !== 'development') {
-	const server = 'https://update.electronjs.org'
-	const url = `${server}/${package.author}/${package.name}/${process.platform}-${process.arch}/${app.getVersion()}`
-	autoUpdater.setFeedURL({ url })
-	setInterval(() => {
-		autoUpdater.checkForUpdates()
-	}, 60000)
-	autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
-		const dialogOpts = {
-			type: 'info',
-			buttons: ['Restart', 'Later'],
-			title: 'Application Update',
-			message: process.platform === 'win32' ? releaseNotes : releaseName,
-			detail: 'A new version has been downloaded. Restart the application to apply the updates, please manually quit from tray icon.'
-		}
+// if (env !== 'development') {
+// 	const server = 'https://update.electronjs.org'
+// 	const url = `${server}/${package.author}/${package.name}/${process.platform}-${process.arch}/${app.getVersion()}`
+// 	autoUpdater.setFeedURL({ url })
+// 	setInterval(() => {
+// 		autoUpdater.checkForUpdates()
+// 	}, 60000)
+// 	autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
+// 		const dialogOpts = {
+// 			type: 'info',
+// 			buttons: ['Restart', 'Later'],
+// 			title: 'Application Update',
+// 			message: process.platform === 'win32' ? releaseNotes : releaseName,
+// 			detail: 'A new version has been downloaded. Restart the application to apply the updates, please manually quit from tray icon.'
+// 		}
 
-		dialog.showMessageBox(dialogOpts).then((returnValue) => {
-			console.log(returnValue)
-			if (returnValue.response === 0) autoUpdater.quitAndInstall()
-		})
-	})
-	autoUpdater.on('error', (message) => {
-		console.error('There was a problem updating the application')
-		console.error(message)
-	})
-}
+// 		dialog.showMessageBox(dialogOpts).then((returnValue) => {
+// 			console.log(returnValue)
+// 			if (returnValue.response === 0) autoUpdater.quitAndInstall()
+// 		})
+// 	})
+// 	autoUpdater.on('error', (message) => {
+// 		console.error('There was a problem updating the application')
+// 		console.error(message)
+// 	})
+// }
+require('update-electron-app')({
+	repo: 'piyushdolar/timeo',
+	updateInterval: '5 minutes',
+	notifyUser: true
+})
 
 /* ---------------------------------------------
 	WINDOW - Main window

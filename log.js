@@ -29,6 +29,7 @@ class Log {
 				if (err) console.error('Can not create the folder for storing logs');
 			});
 		}
+
 		// Create file
 		this.write('App opened', moment())
 	}
@@ -74,8 +75,12 @@ class Log {
 			try {
 				const fileName = date ? path.join(this.#dir, `${date}.log`) : this.#filename
 				fs.readFile(fileName, (err, data) => {
-					if (err) this.write('Log file generated', moment())
-					resolve(JSON.parse(data))
+					if (err) {
+						this.write('Log file generated', moment())
+						resolve([])
+					} else {
+						resolve(JSON.parse(data))
+					}
 				})
 			} catch (error) {
 				reject('Can not read file', error)
