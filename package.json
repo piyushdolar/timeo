@@ -29,7 +29,6 @@
 	"dependencies": {
 		"dotenv": "^16.3.1",
 		"electron-squirrel-startup": "^1.0.0",
-		"moment": "^2.29.4",
-		"update-electron-app": "^2.0.1"
+		"moment": "^2.29.4"
 	}
 }

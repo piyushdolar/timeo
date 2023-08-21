@@ -8,6 +8,14 @@ module.exports = {
 	rebuildConfig: {},
 	makers: [
 		{
+			name: '@electron-forge/maker-dmg',
+			config: {
+				icon: './assets/images/icon.icns',
+				background: './assets/images/dmg-background.png',
+				format: 'ULFO'
+			}
+		},
+		{
 			name: '@electron-forge/maker-squirrel',
 			config: {
 				setupIcon: './assets/images/icon.ico',
@@ -22,26 +30,18 @@ module.exports = {
 				icon: './assets/images/icon.ico'
 			}
 		},
-		{
-			name: '@electron-forge/maker-dmg',
-			config: {
-				icon: './assets/images/icon.icns',
-				background: './assets/images/dmg-background.png',
-				format: 'ULFO'
-			}
-		},
-		{
-			name: '@electron-forge/maker-deb',
-			config: {
-				options: {
-					icon: './assets/images/icon.png'
-				}
-			},
-		},
-		{
-			name: '@electron-forge/maker-rpm',
-			config: {},
-		},
+		// {
+		// 	name: '@electron-forge/maker-deb',
+		// 	config: {
+		// 		options: {
+		// 			icon: './assets/images/icon.png'
+		// 		}
+		// 	},
+		// },
+		// {
+		// 	name: '@electron-forge/maker-rpm',
+		// 	config: {},
+		// },
 	],
 	plugins: [
 		{

@@ -3,8 +3,9 @@
 // --------------------------------------------
 
 // Import electron
-const { app, BrowserWindow, ipcMain, Tray, Menu, Notification, powerMonitor, nativeImage } = require('electron')
+const { app, BrowserWindow, ipcMain, Tray, Menu, Notification, powerMonitor, nativeImage, autoUpdater, dialog } = require('electron')
 const path = require('path')
+const package = require('./package.json')
 
 // --------------------------------------------
 // LOGS Setup
@@ -20,15 +21,6 @@ const moment = require('moment')
 if (require('electron-squirrel-startup')) app.quit();
 
 // --------------------------------------------
-// Auto update the app
-// --------------------------------------------
-require('update-electron-app')({
-	repo: 'piyushdolar/timeo',
-	updateInterval: '5 minutes',
-	notifyUser: true
-})
-
-// --------------------------------------------
 // Setup development env
 // --------------------------------------------
 const env = process.env.NODE_ENV || 'production';
@@ -39,6 +31,36 @@ if (env === 'development') {
 		electron: path.join(__dirname, 'node_modules', '.bin', 'electron'),
 		hardResetMethod: 'exit'
 	});
+}
+
+// --------------------------------------------
+// Auto update the app
+// --------------------------------------------
+if (env !== 'development') {
+	const server = 'https://update.electronjs.org'
+	const url = `${server}/${package.author}/${package.name}/${process.platform}-${process.arch}/${app.getVersion()}`
+	autoUpdater.setFeedURL({ url })
+	setInterval(() => {
+		autoUpdater.checkForUpdates()
+	}, 60000)
+	autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
+		const dialogOpts = {
+			type: 'info',
+			buttons: ['Restart', 'Later'],
+			title: 'Application Update',
+			message: process.platform === 'win32' ? releaseNotes : releaseName,
+			detail: 'A new version has been downloaded. Restart the application to apply the updates, please manually quit from tray icon.'
+		}
+
+		dialog.showMessageBox(dialogOpts).then((returnValue) => {
+			console.log(returnValue)
+			if (returnValue.response === 0) autoUpdater.quitAndInstall()
+		})
+	})
+	autoUpdater.on('error', (message) => {
+		console.error('There was a problem updating the application')
+		console.error(message)
+	})
 }
 
 /* ---------------------------------------------
