@@ -41,8 +41,21 @@ if (env !== 'development') {
 	const url = `${server}/${package.author}/${package.name}/${process.platform}-${process.arch}/${app.getVersion()}`
 	autoUpdater.setFeedURL({ url })
 	setInterval(() => {
+		log.write(`Interval Started`, moment())
 		autoUpdater.checkForUpdates()
 	}, 60000)
+	autoUpdater.on('before-quit-for-update', (progressObj) => {
+		log.write(`before quite for update: ${progressObj}`, moment())
+	});
+	autoUpdater.on('update-not-available', (progressObj) => {
+		log.write(`Update not available: ${progressObj}`, moment())
+	});
+	autoUpdater.on('update-available', (progressObj) => {
+		log.write(`Update available: ${progressObj}`, moment())
+	});
+	autoUpdater.on('checking-for-update', (progressObj) => {
+		log.write(`Checking4Update: ${progressObj}`, moment())
+	});
 	autoUpdater.on('download-progress', (progressObj) => {
 		const { percent, transferred, total } = progressObj;
 		log.write(`Downloading: ${percent}% - ${transferred}/${total}`, moment())
