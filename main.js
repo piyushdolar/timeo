@@ -56,7 +56,6 @@ if (env !== 'development') {
 			console.log(returnValue)
 			if (returnValue.response === 0) {
 				app.isQuiting = true
-				app.quit()
 				autoUpdater.quitAndInstall()
 			}
 		})
