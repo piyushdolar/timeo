@@ -215,6 +215,9 @@ window.preload.listenSetTime((event, time) => {
 	updateInput.value = splitTime[0]
 	updateAmPm.value = splitTime[1]
 	setTime(time)
+
+	// Set cookie
+	window.preload.cookie('manual-time', moment().format('hh:mm:ss a'))
 })
 
 

@@ -1,25 +1,36 @@
+// --------------------------------------------
 // THIS SCRIPT ONLY RUNS ON SERVER SIDE.
+// --------------------------------------------
+
 // Import electron
 const { app, BrowserWindow, ipcMain, Tray, Menu, Notification, powerMonitor, nativeImage } = require('electron')
 const path = require('path')
 
-// Log
+// --------------------------------------------
+// LOGS Setup
+// --------------------------------------------
 const { Log } = require('./log')
 const log = new Log()
 const moment = require('moment')
 
-// For windows
-// run this as early in the main process as possible
+/* ----------------------------------------------------
+	WINDOWS
+	Run this as early in the main process as possible
+----------------------------------------------------- */
 if (require('electron-squirrel-startup')) app.quit();
 
+// --------------------------------------------
 // Auto update the app
+// --------------------------------------------
 require('update-electron-app')({
 	repo: 'piyushdolar/timeo',
 	updateInterval: '5 minutes',
 	notifyUser: true
 })
 
-// If development environment
+// --------------------------------------------
+// Setup development env
+// --------------------------------------------
 const env = process.env.NODE_ENV || 'production';
 let devtool = false
 if (env === 'development') {
@@ -30,7 +41,10 @@ if (env === 'development') {
 	});
 }
 
-// Dock image initialize
+/* ---------------------------------------------
+	WINDOW - Main window
+	index.html, renderer.js, preload.js,
+---------------------------------------------- */
 let tray;
 const defaultWindowSetting = {
 	width: env === 'development' ? 800 : 500,
@@ -39,7 +53,6 @@ const defaultWindowSetting = {
 		devTools: devtool,
 		preload: path.join(__dirname, 'preload.js'),
 		nodeIntegration: true,
-		partition: 'persist:timeo'
 	},
 	center: true,
 	resizable: env === 'development' ? true : false, // true dev
@@ -48,11 +61,6 @@ const defaultWindowSetting = {
 	icon: path.join(__dirname, './assets/images/icon.ico'),
 	autoHideMenuBar: true //use alt/option to show
 }
-
-/* ---------------------------------------------
-	WINDOW - Main window
-	index.html, renderer.js, preload.js,
----------------------------------------------- */
 async function createWindow() {
 	const win = await new BrowserWindow(defaultWindowSetting)
 	await win.loadFile('index.html')
@@ -60,6 +68,7 @@ async function createWindow() {
 	// Tray Icon
 	const trayIconPath = path.join(__dirname, './assets/images/iconTemplate.png')
 	tray = new Tray(nativeImage.createFromPath(trayIconPath))
+	tray.setToolTip('Timeo');
 	const trayContextMenu = Menu.buildFromTemplate([
 		{
 			label: 'Open Timeo',
@@ -113,14 +122,6 @@ async function createWindow() {
 			'System unlocked',
 			moment()
 		)))
-
-		// Check in for first time
-		const timeNow = moment();
-		const beforeTime = moment('07:55 am', 'hh:mm a');
-		const afterTime = moment('08:30 am', 'hh:mm a');
-		if (timeNow.isBetween(beforeTime, afterTime)) {
-			win.webContents.send('set-check-in', timeNow)
-		}
 	})
 
 	// Screen - shutdown
@@ -191,6 +192,15 @@ app.whenReady().then(async () => {
 	if (cookie['manual-time']) {
 		const today = moment(cookie.today, 'YYYY-MM-DD HH:mm:ss')
 		if (today.isSame(moment(), 'day')) win.webContents.send('set-check-in', cookie['manual-time'])
+		// Check in for first time
+		else {
+			const timeNow = moment();
+			const beforeTime = moment('07:55 am', 'hh:mm a');
+			const afterTime = moment('08:30 am', 'hh:mm a');
+			if (timeNow.isBetween(beforeTime, afterTime)) {
+				win.webContents.send('set-check-in', timeNow.format('hh:mm:ss a'))
+			}
+		}
 	}
 
 	// Mac: Activate window again on closed.
@@ -223,5 +233,7 @@ app.whenReady().then(async () => {
 	Minimize window when clicked on close
 ---------------------------------------------------- */
 app.on('window-all-closed', () => {
-	if (process.platform !== 'darwin') app.quit()
+	if (process.platform !== 'darwin') {
+		app.quit();
+	}
 })

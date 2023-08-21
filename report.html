@@ -11,28 +11,32 @@
 	</head>
 	<body class="vh-75 my-2">
 		<div class="container">
-			<nav aria-label="breadcrumb" class="mt-2">
-				<ol class="breadcrumb">
-					<li class="breadcrumb-item"><a href="./index.html" class="text-decoration-none">Home</a></li>
-					<li class="breadcrumb-item active" aria-current="page">Library</li>
+			<nav aria-label="breadcrumb" class="my-2 d-flex justify-content-between">
+				<ol class="breadcrumb mb-0">
+					<li class="breadcrumb-item"><a href="./index.html" class="text-decoration-none">Dashboard</a></li>
+					<li class="breadcrumb-item active" aria-current="page">History</li>
 				</ol>
+				<div class="input-group w-auto ms-auto date-select-group">
+					<select id="date-select-day" class="form-select py-0 px-2">
+						<option value="">Day</option>
+					</select>
+					<select id="date-select-month" class="form-select py-0 px-2">
+						<option value="">Month</option>
+					</select>
+					<select id="date-select-year" class="form-select py-0 px-2">
+						<option value="">Year</option>
+					</select>
+				</div>
 			</nav>
 			<div class="card">
-				<div class="card-body">
-					<div class="d-flex justify-content-between">
-						<span>
-							<h5 class="card-title d-flex align-items-center">
-								History
-								<span class="badge bg-secondary rounded-pill fs-10 ms-1" id="history-count"></span>
-							</h5>
-							<h6 class="card-subtitle mb-2 text-body-secondary">Refer below log list for detailed activity for each day.</h6>
-						</span>
-						<span>
-							<select id="select-date" class="form-select w-auto form-select-custom p-1"></select>
-						</span>
-					</div>
+				<div class="card-body p-2">
+					<h5 class="card-title d-flex align-items-center">
+						History
+						<span class="badge bg-primary rounded-pill ms-1 ms-auto" id="history-count"></span>
+					</h5>
+					<h6 class="card-subtitle mb-2 text-body-secondary">Refer below log list for detailed activity for each day.</h6>
 					<div class="card-text">
-						<table id="log-table" class="table table-hover table-sm table-borderless">
+						<table id="log-table" class="table table-hover table-sm table-borderless m-0">
 							<thead>
 								<tr>
 									<th scope="col">Event date</th>

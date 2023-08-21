@@ -86,28 +86,14 @@ class Log {
 	history(fileDate) {
 		return new Promise((resolve, reject) => {
 			try {
-				fs.readdir(this.#dir, async (err, files) => {
-					if (err) console.error('ERR', err)
-
-					let fileDates = []
-					let fileContent = []
-
-					files.forEach(async file => {
-						if (path.extname(file).toLowerCase() === '.log') {
-							const parsed = path.parse(file)
-							fileDates.push(parsed)
-							if (parsed.name === fileDate) {
-								const filePath = path.join(this.#dir, file);
-								fileContent = JSON.parse(fs.readFileSync(filePath))
-							}
-						}
-					})
-
-					resolve({
-						dates: fileDates,
-						fileContent: fileContent
-					})
-				});
+				const filePath = path.join(this.#dir, `${fileDate}.log`);
+				fs.readFile(filePath, (err, data) => {
+					if (err) {
+						resolve([])
+					} else {
+						resolve(JSON.parse(data))
+					}
+				})
 			} catch (error) {
 				reject('Can not read file', error)
 			}
