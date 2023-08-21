@@ -44,33 +44,16 @@ if (env !== 'development') {
 		log.write(`Interval Started`, moment())
 		autoUpdater.checkForUpdates()
 	}, 60000)
-	autoUpdater.on('before-quit-for-update', (progressObj) => {
-		log.write(`before quite for update: ${progressObj}`, moment())
-	});
-	autoUpdater.on('update-not-available', (progressObj) => {
-		log.write(`Update not available: ${progressObj}`, moment())
-	});
-	autoUpdater.on('update-available', (progressObj) => {
-		log.write(`Update available: ${progressObj}`, moment())
-	});
-	autoUpdater.on('checking-for-update', (progressObj) => {
-		log.write(`Checking4Update: ${progressObj}`, moment())
-	});
-	autoUpdater.on('download-progress', (progressObj) => {
-		const { percent, transferred, total } = progressObj;
-		log.write(`Downloading: ${percent}% - ${transferred}/${total}`, moment())
-	});
 	autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
 		const dialogOpts = {
 			type: 'info',
 			buttons: ['Restart', 'Later'],
 			title: 'Application Update',
 			message: process.platform === 'win32' ? releaseNotes : releaseName,
-			detail: 'A new version has been downloaded. Restart the application to apply the updates, please manually quit from tray icon.'
+			detail: 'A new version has been downloaded. Restart the application to apply the updates.'
 		}
 
 		dialog.showMessageBox(dialogOpts).then((returnValue) => {
-			console.log(returnValue)
 			if (returnValue.response === 0) {
 				app.isQuiting = true
 				autoUpdater.quitAndInstall()
@@ -82,11 +65,6 @@ if (env !== 'development') {
 		console.error(message)
 	})
 }
-require('update-electron-app')({
-	repo: 'piyushdolar/timeo',
-	updateInterval: '5 minutes',
-	notifyUser: true
-})
 
 /* ---------------------------------------------
 	WINDOW - Main window
