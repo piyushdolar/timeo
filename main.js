@@ -43,6 +43,10 @@ if (env !== 'development') {
 	setInterval(() => {
 		autoUpdater.checkForUpdates()
 	}, 60000)
+	autoUpdater.on('download-progress', (progressObj) => {
+		const { percent, transferred, total } = progressObj;
+		log.write(`Downloading: ${percent}% - ${transferred}/${total}`, moment())
+	});
 	autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
 		const dialogOpts = {
 			type: 'info',
