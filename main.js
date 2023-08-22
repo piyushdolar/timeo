@@ -227,7 +227,7 @@ app.whenReady().then(async () => {
 	// Mac: Activate window again on closed.
 	app.on('activate', () => {
 		if (BrowserWindow.getAllWindows().length === 0) createWindow()
-		win.show()
+		// win.show()
 	})
 })
 
