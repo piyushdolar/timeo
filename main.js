@@ -191,8 +191,6 @@ async function createWindow() {
 	return win
 }
 
-
-
 /* ---------------------------------------------------
 	WINDOW - Ready
 	When all windows are ready invoke it

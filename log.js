@@ -34,8 +34,28 @@ class Log {
 		this.write('App opened', moment())
 	}
 
+	error(errorText) {
+		const file = `${this.#dir}/${date}.error.log`
+
+		// Check file exist
+		const fileExists = fs.promises.access(file)
+			.then(() => true)
+			.catch(() => false);
+
+		// Create file if not exist
+		if (!fileExists) {
+			fs.promises.writeFile(file, 'File created');
+		} else {
+			// Append to file
+			fs.appendFileSync(file, errorText, function (err) {
+				if (err) console.error(err);
+			});
+		}
+	}
+
 	async config(config) {
 		const file = `${this.#dir}/config.json`
+		const $this = this
 		try {
 			let fileData = {};
 
@@ -65,12 +85,13 @@ class Log {
 
 			return fileData;
 		} catch (error) {
-			console.error('Error:', error);
+			$this.error(`[${moment().format('hh:mm:ss a')}] ${error}`)
 			return {};
 		}
 	}
 
 	read(date) {
+		const $this = this
 		return new Promise((resolve, reject) => {
 			try {
 				const fileName = date ? path.join(this.#dir, `${date}.log`) : this.#filename
@@ -85,10 +106,12 @@ class Log {
 			} catch (error) {
 				reject('Can not read file', error)
 			}
-		}).then(resolved => resolved).catch(error => console.error('log.js:', error))
+		}).then(resolved => resolved)
+			.catch(error => $this.error(`[${moment().format('hh:mm:ss a')}] ${error}`))
 	}
 
 	history(fileDate) {
+		const $this = this
 		return new Promise((resolve, reject) => {
 			try {
 				const filePath = path.join(this.#dir, `${fileDate}.log`);
@@ -102,13 +125,16 @@ class Log {
 			} catch (error) {
 				reject('Can not read file', error)
 			}
-		}).then(resolved => resolved).catch(error => console.error('log.js:history:', error))
+		}).then(resolved => resolved)
+			.catch(error => $this.error(`[${moment().format('hh:mm:ss a')}] ${error}`))
 	}
 
 	writeIn(data) {
+		const $this = this
+
 		fs.writeFile(this.#filename, JSON.stringify(data), (err) => {
 			if (err) {
-				console.error('Can not write in the file')
+				$this.error(`[${moment().format('hh:mm:ss a')}] ${err}`)
 			}
 		})
 	}
@@ -129,18 +155,12 @@ class Log {
 				$this.writeIn(fileData)
 			} else {
 				// file not exist
+				$this.error(`[${moment().format('hh:mm:ss a')}] ${err}`)
 				await array.push(object)
 				$this.writeIn(array)
 			}
 		});
 		return object
-	}
-
-	format(eventType, eventTime) {
-		return [{
-			eventType,
-			eventTime
-		}]
 	}
 }
 
