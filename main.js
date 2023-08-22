@@ -86,37 +86,10 @@ const defaultWindowSetting = {
 	icon: path.join(__dirname, './assets/images/icon.ico'),
 	autoHideMenuBar: true //use alt/option to show
 }
+
 async function createWindow() {
 	const win = await new BrowserWindow(defaultWindowSetting)
 	await win.loadFile('index.html')
-
-	// Tray Icon
-	const trayIconPath = path.join(__dirname, './assets/images/iconTemplate.png')
-	tray = new Tray(nativeImage.createFromPath(trayIconPath))
-	tray.setToolTip('Timeo');
-	const trayContextMenu = Menu.buildFromTemplate([
-		{
-			label: 'Open Timeo',
-			click: () => win.show()
-		},
-		{
-			label: 'About',
-			role: 'about'
-		},
-		{
-			label: 'Quit',
-			click: () => {
-				app.isQuiting = true
-				app.quit()
-			}
-		},
-	])
-	tray.setContextMenu(trayContextMenu)
-
-	// On Tray icon click
-	tray.on('click', async () => {
-		win.show()
-	})
 
 	// On minimize
 	win.on('minimize', function (event) {
@@ -223,6 +196,34 @@ app.whenReady().then(async () => {
 			}
 		}
 	}
+
+	// Create Tray Icon
+	const trayIconPath = path.join(__dirname, './assets/images/iconTemplate.png')
+	tray = new Tray(nativeImage.createFromPath(trayIconPath))
+	tray.setToolTip('Timeo');
+	const trayContextMenu = Menu.buildFromTemplate([
+		{
+			label: 'Open Timeo',
+			click: () => win.show()
+		},
+		{
+			label: 'About',
+			role: 'about'
+		},
+		{
+			label: 'Quit',
+			click: () => {
+				app.isQuiting = true
+				app.quit()
+			}
+		},
+	])
+	tray.setContextMenu(trayContextMenu)
+
+	// On Tray icon click
+	tray.on('click', async () => {
+		win.show()
+	})
 
 	// Mac: Activate window again on closed.
 	app.on('activate', () => {
