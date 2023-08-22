@@ -11,7 +11,7 @@ const package = require('./package.json')
 // LOGS Setup
 // --------------------------------------------
 const { Log } = require('./log')
-const log = new Log()
+const log = new Log(app.getPath('logs'))
 const moment = require('moment')
 
 /* ----------------------------------------------------
@@ -185,6 +185,7 @@ app.whenReady().then(async () => {
 	const cookie = await log.config()
 	if (cookie['manual-time']) {
 		const today = moment(cookie.today, 'YYYY-MM-DD HH:mm:ss')
+		console.log(cookie['manual-time'])
 		if (today.isSame(moment(), 'day')) win.webContents.send('set-check-in', cookie['manual-time'])
 		// Check in for first time
 		else {

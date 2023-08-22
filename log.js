@@ -13,17 +13,21 @@ const path = require('path')
 
 // Class
 class Log {
-	#dir = homedir + '/timeo'
+	#dir
 	#file
 
-	constructor() {
+	constructor(path) {
+		this.#dir = path
 		this.#file = this.#dir + '/' + date + '.log'
 	}
 
 	// Check if file is exist
 	async isFileExist(fileName) {
 		const $this = this
-		const file = fileName ? path.join(this.#dir, fileName) : this.file
+		let file = this.#file;
+		if (fileName) {
+			file = path.join(this.#dir, fileName)
+		}
 		try {
 			return new Promise((resolve) => {
 				fs.access(file, fs.constants.R_OK | fs.constants.W_OK, (error) => {
@@ -45,23 +49,22 @@ class Log {
 		try {
 			// Check if the file exists
 			const fileExists = await this.isFileExist()
-
 			if (fileExists) {
 				// Read existing content
-				const existingContent = await fs.readFile(this.#file, 'utf-8')
+				const existingContent = await fs.readFileSync(this.#file, 'utf-8')
 				const jsonExistingContent = await JSON.parse(existingContent)
 				await jsonExistingContent.push(newObject)
 				const updatedContent = await JSON.stringify(jsonExistingContent)
 
 				// Write the updated content back to the file
-				await fs.writeFile(this.#file, updatedContent);
+				await fs.writeFileSync(this.#file, updatedContent);
 			} else {
 				const newContent = []
 				newContent.push(newObject)
-				await JSON.stringify(newContent)
+				const stringify = await JSON.stringify(newContent)
 
 				// Create the file and write initial data
-				await fs.writeFile(this.#file, newContent);
+				await fs.writeFileSync(this.#file, stringify);
 			}
 			return newObject
 		} catch (error) {
@@ -72,23 +75,25 @@ class Log {
 	// Read file
 	async readFile(date) {
 		const $this = this
+		let defaultArray = []
 		try {
 			// Check if the file exists
 			const fileExists = await $this.isFileExist(date)
 			if (fileExists) {
 				// Read existing content
 				const existingContent = await fs.readFileSync($this.#file, 'utf-8');
-				const parsed = await JSON.parse(existingContent)
-				return parsed;
+				// const parsed = await JSON.parse(existingContent)
+				return existingContent; // don't parse ipc need strings
 			} else {
 				// Create the file and write initial data
-				const newObject = JSON.stringify({ eventType: 'File created', eventTime: moment() })
-				await $this.writeFile(newObject)
-				return newObject
+				const object = { eventType: 'File created', eventTime: moment() }
+				defaultArray.push(object)
+				await $this.writeFile(object)
+				return JSON.stringify(defaultArray) // ipc needs stringify only
 			}
 		} catch (error) {
-			this.error(error);
-			return [];
+			this.error(`readFile(): ${error}`);
+			return defaultArray;
 		}
 	}
 
@@ -149,7 +154,7 @@ class Log {
 	}
 
 	// Find and get data from the file
-	async history(date) {
+	async history(date) { // date - DDMMYYYY(format)
 		const $this = this
 		const data = await new Promise((resolve, reject) => {
 			try {

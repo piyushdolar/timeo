@@ -165,7 +165,8 @@ updateLeftButton.addEventListener("click", () => {
 // --------------------------------------------
 // Logs Read activity
 // --------------------------------------------
-function setLogs(logs) {
+function setLogs(stringifyLogs) {
+	const logs = JSON.parse(stringifyLogs)
 	// Sort to the descending order by time
 	// logs.sort((a, b) => new Date(b.eventTime) - new Date(a.eventTime))
 
