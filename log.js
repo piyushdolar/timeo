@@ -23,7 +23,7 @@ class Log {
 	// Check if file is exist
 	async isFileExist(fileName) {
 		const $this = this
-		const file = date ? path.join(this.#dir, fileName) : this.file
+		const file = fileName ? path.join(this.#dir, fileName) : this.file
 		try {
 			return new Promise((resolve) => {
 				fs.access(file, fs.constants.R_OK | fs.constants.W_OK, (error) => {
@@ -94,21 +94,21 @@ class Log {
 
 	// Write error log into file
 	async error(errorText) {
-		const file = path.join(this.#dir, `${date}.error.log`)
+		let file = `${date}.error.log`
 
 		// Prepare text
-		const text = `[${moment().format('hh:mm:ss a')}] ${errorText}`
+		let text = `[${moment().format('hh:mm:ss a')}] ${errorText}\n`
 
 		// Check file exist
 		const fileExists = await this.isFileExist(file)
-
+		file = path.join(this.#dir, `${date}.error.log`)
 		// Create file if not exist
 		if (!fileExists) {
 			fs.promises.writeFile(file, text);
 		} else {
 			// Append to file
-			fs.appendFileSync(file, text, function (err) {
-				if (err) console.error('error(): ', err);
+			await fs.appendFile(file, text, function (error) {
+				if (error) console.error('error(): ', error);
 			});
 		}
 	}

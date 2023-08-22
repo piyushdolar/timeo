@@ -1,28 +1,28 @@
 # Timeo
 
-An electron based repository for time management for office
+An electron based repository for time management for office.
 
-# Features
+## Table of Contents
 
-**Notification:**
+-   [Features](#features)
+-   [Installation](#installation)
+-   [Issues](#Issues)
 
--   You’ll get notified for your checkout time at 30 minutes, 15 minutes, and 5 minutes before times run out.
+## Features
 
-**Manual time:**
+-   **Notification:** You will get notified for your checkout time at 30 minutes, 15 minutes, and 5 minutes before times run out.
 
--   You also can adjust arriving time to start the your own timer.
+-   **Manual time:** You also can adjust arriving time to start the your own timer.
 
-**Auto start timer:**
+-   **Auto start timer:** Although it’ll start auto check in upon your arrival between 7:55am to 8:30am, after arriving 8:15am you will needs to setup your custom check in time.
 
--   Although it’ll start auto check in upon your arrival between 7:55am to 8:30am, after arriving 8:15am you will needs to setup your custom check in time.
+-   **Today’s activity:** You’ll get each activities throughout your day such as Screen lock, Screen unlock.
 
-**Today’s activity:**
+-   **Reports:** You can see your post days history report.
 
--   You’ll get each activities throughout your day such as Screen lock, Screen unlock.
+## Installation
 
-**Reports:**
-
--   You can see your post days history report.
+Download latest version of release and install it, make sure to disable your antivirus first in order to install application.
 
 ## Issues
 
