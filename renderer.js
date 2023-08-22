@@ -24,6 +24,7 @@ versionTag.innerHTML = capitalizedWord + ' v' + preload.version
 // --------------------------------------------
 // let startTime = moment('08:00:00 am', 'hh:mm:ss a');
 let endTime = moment('05:00:00 pm', 'hh:mm:ss a');
+const lunchTime = moment('11:55:00 am', 'h:mm:ss a');
 let flag = {
 	check30: true,
 	check15: true,
@@ -49,6 +50,11 @@ setInterval(function () {
 	document.getElementById("remaining-time").textContent = text
 
 	// --------------- NOTIFICATION ----------------//
+	// Send notification for lunch
+
+	if (currentTime.isSame(lunchTime, 'seconds')) {
+		window.preload.notification('Lunch time!', "Hey! it's break time, it's a lunch time")
+	}
 	// Notify: Send notification before 30 minutes
 	if (flag.check30 && hours === 0 && minutes === 30 && seconds === 0) {
 		flag.check30 = false
