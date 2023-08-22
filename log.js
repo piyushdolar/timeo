@@ -4,9 +4,6 @@ const fs = require('fs')
 // OS
 const { homedir } = require('os')
 
-// Package file
-const packageJson = require('./package.json')
-
 // Moment JS
 const moment = require('moment')
 const date = moment().format('DDMMYYYY')
@@ -17,52 +14,113 @@ const path = require('path')
 // Class
 class Log {
 	#dir = homedir + '/timeo'
-	#filename
+	#file
 
 	constructor() {
-		const $this = this
-		$this.#filename = $this.#dir + '/' + date + '.log'
-
-		// Create directory
-		if (!fs.existsSync($this.#dir)) {
-			fs.mkdir($this.#dir, { recursive: true }, (err) => {
-				if (err) console.error('Can not create the folder for storing logs');
-			});
-		}
-
-		// Create file
-		this.write('App opened', moment())
+		this.#file = this.#dir + '/' + date + '.log'
 	}
 
-	error(errorText) {
-		const file = `${this.#dir}/${date}.error.log`
+	// Check if file is exist
+	async isFileExist(fileName) {
+		const $this = this
+		const file = date ? path.join(this.#dir, fileName) : this.file
+		try {
+			return new Promise((resolve) => {
+				fs.access(file, fs.constants.R_OK | fs.constants.W_OK, (error) => {
+					if (error) {
+						resolve(false); // File access is not possible
+					} else {
+						resolve(true); // File access is possible
+					}
+				});
+			});
+		} catch (error) {
+			console.error('isFileExist(): ', error)
+			return false
+		}
+	}
+
+	// Write file
+	async writeFile(newObject) {
+		try {
+			// Check if the file exists
+			const fileExists = await this.isFileExist()
+
+			if (fileExists) {
+				// Read existing content
+				const existingContent = await fs.readFile(this.#file, 'utf-8')
+				const jsonExistingContent = await JSON.parse(existingContent)
+				await jsonExistingContent.push(newObject)
+				const updatedContent = await JSON.stringify(jsonExistingContent)
+
+				// Write the updated content back to the file
+				await fs.writeFile(this.#file, updatedContent);
+			} else {
+				const newContent = []
+				newContent.push(newObject)
+				await JSON.stringify(newContent)
+
+				// Create the file and write initial data
+				await fs.writeFile(this.#file, newContent);
+			}
+			return newObject
+		} catch (error) {
+			this.error('Error:', error);
+		}
+	}
+
+	// Read file
+	async readFile(date) {
+		const $this = this
+		try {
+			// Check if the file exists
+			const fileExists = await $this.isFileExist(date)
+			if (fileExists) {
+				// Read existing content
+				const existingContent = await fs.readFileSync($this.#file, 'utf-8');
+				const parsed = await JSON.parse(existingContent)
+				return parsed;
+			} else {
+				// Create the file and write initial data
+				const newObject = JSON.stringify({ eventType: 'File created', eventTime: moment() })
+				await $this.writeFile(newObject)
+				return newObject
+			}
+		} catch (error) {
+			this.error(error);
+			return [];
+		}
+	}
+
+	// Write error log into file
+	async error(errorText) {
+		const file = path.join(this.#dir, `${date}.error.log`)
+
+		// Prepare text
+		const text = `[${moment().format('hh:mm:ss a')}] ${errorText}`
 
 		// Check file exist
-		const fileExists = fs.promises.access(file)
-			.then(() => true)
-			.catch(() => false);
+		const fileExists = await this.isFileExist(file)
 
 		// Create file if not exist
 		if (!fileExists) {
-			fs.promises.writeFile(file, 'File created');
+			fs.promises.writeFile(file, text);
 		} else {
 			// Append to file
-			fs.appendFileSync(file, errorText, function (err) {
-				if (err) console.error(err);
+			fs.appendFileSync(file, text, function (err) {
+				if (err) console.error('error(): ', err);
 			});
 		}
 	}
 
 	async config(config) {
-		const file = `${this.#dir}/config.json`
+		const file = 'config.json'
 		const $this = this
 		try {
 			let fileData = {};
 
 			// Check file exist
-			const fileExists = await fs.promises.access(file)
-				.then(() => true)
-				.catch(() => false);
+			const fileExists = await $this.isFileExist(file)
 
 			// Create file if not exist
 			if (!fileExists) {
@@ -85,82 +143,41 @@ class Log {
 
 			return fileData;
 		} catch (error) {
-			$this.error(`[${moment().format('hh:mm:ss a')}] ${error}`)
+			$this.error(error)
 			return {};
 		}
 	}
 
-	read(date) {
+	// Find and get data from the file
+	async history(date) {
 		const $this = this
-		return new Promise((resolve, reject) => {
+		const data = await new Promise((resolve, reject) => {
 			try {
-				const fileName = date ? path.join(this.#dir, `${date}.log`) : this.#filename
-				fs.readFile(fileName, (err, data) => {
-					if (err) {
-						this.write('Log file generated', moment())
-						resolve([])
-					} else {
-						resolve(JSON.parse(data))
-					}
-				})
+				resolve($this.readFile(`${date}.log`))
 			} catch (error) {
-				reject('Can not read file', error)
+				reject('history(): ', error)
 			}
 		}).then(resolved => resolved)
-			.catch(error => $this.error(`[${moment().format('hh:mm:ss a')}] ${error}`))
+			.catch(error => $this.error(error))
+		return data
 	}
 
-	history(fileDate) {
-		const $this = this
-		return new Promise((resolve, reject) => {
-			try {
-				const filePath = path.join(this.#dir, `${fileDate}.log`);
-				fs.readFile(filePath, (err, data) => {
-					if (err) {
-						resolve([])
-					} else {
-						resolve(JSON.parse(data))
-					}
-				})
-			} catch (error) {
-				reject('Can not read file', error)
-			}
-		}).then(resolved => resolved)
-			.catch(error => $this.error(`[${moment().format('hh:mm:ss a')}] ${error}`))
-	}
-
-	writeIn(data) {
-		const $this = this
-
-		fs.writeFile(this.#filename, JSON.stringify(data), (err) => {
-			if (err) {
-				$this.error(`[${moment().format('hh:mm:ss a')}] ${err}`)
-			}
-		})
-	}
-
+	// Write into file
 	async write(eventType, eventTime) {
 		let object = {
 			eventType,
 			eventTime
 		}
 		const $this = this
-		let array = []
-
-		await fs.readFile($this.#filename, async function (err, data) {
-			// file exist
-			if (!err && data) {
-				let fileData = await JSON.parse(data)
-				await fileData.push(object)
-				$this.writeIn(fileData)
-			} else {
-				// file not exist
-				$this.error(`[${moment().format('hh:mm:ss a')}] ${err}`)
-				await array.push(object)
-				$this.writeIn(array)
+		const data = await new Promise((resolve, reject) => {
+			try {
+				resolve($this.writeFile(object))
+			} catch (error) {
+				reject('write(): ', error)
 			}
-		});
-		return object
+		}).then(resolved => resolved)
+			.catch(error => $this.error(error))
+		return data
 	}
 }
 

@@ -126,7 +126,7 @@ async function createWindow() {
 
 	// On close
 	win.on('close', function (event) {
-		if (!app.isQuiting) {
+		if (!app.isQuiting && process.platform === 'win32') {
 			event.preventDefault();
 			win.hide();
 		}
@@ -197,12 +197,10 @@ async function createWindow() {
 ---------------------------------------------------- */
 app.whenReady().then(async () => {
 	// Invoke: First time read log from file
-	ipcMain.handle('activity-logs', async () => await log.read())
+	ipcMain.handle('activity-logs', async () => await log.history(moment().format('DDMMYYYY')))
 
 	// Invoke: History logs
-	ipcMain.handle('history-logs', async (event, date) => {
-		return await log.history(date)
-	})
+	ipcMain.handle('history-logs', async (event, date) => await log.history(date))
 
 	// Set Dock Image
 	if (process.platform === 'darwin') app.dock.setIcon(nativeImage.createFromPath('./assets/images/icon.png'))
