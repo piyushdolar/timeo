@@ -1,7 +1,7 @@
 {
 	"name": "timeo",
 	"description": "Time management tool for you",
-	"version": "1.5.0",
+	"version": "1.5.2",
 	"author": "piyushdolar",
 	"license": "ISC",
 	"main": "main.js",
@@ -24,8 +24,7 @@
 		"@electron-forge/plugin-auto-unpack-natives": "^6.3.0",
 		"@electron-forge/publisher-github": "^6.3.0",
 		"electron": "^25.3.1",
-		"electron-reload": "^2.0.0-alpha.1",
-		"semantic-release": "^21.0.9"
+		"electron-reload": "^2.0.0-alpha.1"
 	},
 	"dependencies": {
 		"dotenv": "^16.3.1",

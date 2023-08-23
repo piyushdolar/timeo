@@ -23,11 +23,6 @@ jobs:
             - name: Install packages
               run: npm install
 
-            - name: Run Semantic Release
-              env:
-                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: npx semantic-release
-
             - name: Publish packages
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
