@@ -41,7 +41,7 @@ if (env !== 'development') {
 	const url = `${server}/${package.author}/${package.name}/${process.platform}-${process.arch}/${app.getVersion()}`
 	autoUpdater.setFeedURL({ url })
 	setInterval(() => {
-		log.write(`Interval Started`, moment())
+		log.write(`Interval Started`)
 		autoUpdater.checkForUpdates()
 	}, 60000)
 	autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
@@ -108,26 +108,17 @@ async function createWindow() {
 
 	// Screen - lock
 	powerMonitor.on('lock-screen', async () => {
-		win.webContents.send('activity-read-logs', JSON.stringify(await log.write(
-			'System locked',
-			moment()
-		)))
+		win.webContents.send('activity-read-logs', JSON.stringify(await log.write('System locked')))
 	})
 
 	// Screen - unlock
 	powerMonitor.on('unlock-screen', async () => {
-		win.webContents.send('activity-read-logs', JSON.stringify(await log.write(
-			'System unlocked',
-			moment()
-		)))
+		win.webContents.send('activity-read-logs', JSON.stringify(await log.write('System unlocked')))
 	})
 
 	// Screen - shutdown
 	powerMonitor.on('shutdown', async () => {
-		win.webContents.send('activity-read-logs', JSON.stringify(await log.write(
-			'System shutdown',
-			moment()
-		)))
+		win.webContents.send('activity-read-logs', JSON.stringify(await log.write('System shutdown')))
 	})
 
 	// Call notification
@@ -141,7 +132,7 @@ async function createWindow() {
 	// Set Custom Log
 	ipcMain.on('set-log', async (event, eventType) => {
 		win.webContents.send('activity-read-logs', JSON.stringify(
-			await log.write(eventType, moment())
+			await log.write(eventType)
 		))
 	})
 
@@ -185,7 +176,6 @@ app.whenReady().then(async () => {
 	const cookie = await log.config()
 	if (cookie['manual-time']) {
 		const today = moment(cookie.today, 'YYYY-MM-DD HH:mm:ss')
-		console.log(cookie['manual-time'])
 		if (today.isSame(moment(), 'day')) win.webContents.send('set-check-in', cookie['manual-time'])
 		// Check in for first time
 		else {

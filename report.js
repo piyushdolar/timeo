@@ -122,7 +122,8 @@ function getLogs(date = moment().format('DDMMYYYY')) {
 		} catch (error) {
 			reject(error)
 		}
-	}).then(async logs => {
+	}).then(async stringifyLogs => {
+		const logs = JSON.parse(stringifyLogs)
 		logs.reverse()
 		renderTableData(date, logs)
 	}).catch(error => console.warn('Loading logs has some error', error))

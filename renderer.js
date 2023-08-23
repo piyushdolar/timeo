@@ -165,8 +165,7 @@ updateLeftButton.addEventListener("click", () => {
 // --------------------------------------------
 // Logs Read activity
 // --------------------------------------------
-function setLogs(stringifyLogs) {
-	const logs = JSON.parse(stringifyLogs)
+function setLogs(logs) {
 	// Sort to the descending order by time
 	// logs.sort((a, b) => new Date(b.eventTime) - new Date(a.eventTime))
 
@@ -193,9 +192,7 @@ function setLogs(stringifyLogs) {
 
 // Logs: Listen for latest logs
 window.preload.listenActivity((event, logs) => {
-	let array = []
-	array.push(JSON.parse(logs))
-	setLogs(array)
+	setLogs([JSON.parse(logs)])
 
 	// in case to send back reply to main process
 	// event.sender.send('counter-value', newValue)
@@ -209,7 +206,7 @@ new Promise((resolve, reject) => {
 		reject(error)
 	}
 }).then(logs => {
-	setLogs(logs)
+	setLogs(JSON.parse(logs))
 }).catch(error => console.warn('Loading logs has some error', error))
 
 
