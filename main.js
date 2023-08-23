@@ -144,7 +144,8 @@ async function createWindow() {
 	})
 
 	// Set Cookie
-	ipcMain.on('set-cookie', async (event, biscuit) => {
+	ipcMain.on('cookie', async (event, biscuit) => {
+		// Update today time if time is being set
 		if (biscuit.name === 'manual-time') {
 			await log.config({
 				name: 'today',
@@ -178,27 +179,33 @@ app.whenReady().then(async () => {
 	// Invoke: History logs
 	ipcMain.handle('history-logs', async (event, date) => await log.history(date))
 
+	// Get Cookie -- this function is underdevelopment for future cookie usage
+	ipcMain.handle('get-cookie', async (event, cookieName) => {
+		const cookie = await log.config()
+		if (cookie[cookieName]) {
+			// check is today cookie
+			const today = moment(cookie.today, 'YYYY-MM-DD HH:mm:ss')
+			if (today.isSame(moment(), 'day')) {
+				win.webContents.send('set-check-in', cookie['manual-time'])
+			} else {
+				const timeNow = moment();
+				const beforeTime = moment('07:55 am', 'hh:mm a');
+				const afterTime = moment('08:30 am', 'hh:mm a');
+				if (timeNow.isBetween(beforeTime, afterTime)) {
+					const cookieSetTime = timeNow.format('hh:mm:ss a')
+					win.webContents.send('set-check-in', cookieSetTime)
+				}
+			}
+		} else {
+			return false
+		}
+	})
+
 	// Set Dock Image
 	if (process.platform === 'darwin') app.dock.setIcon(nativeImage.createFromPath('./assets/images/icon.png'))
 
 	// Create window
 	const win = await createWindow()
-
-	// Get Cookie
-	const cookie = await log.config()
-	if (cookie['manual-time']) {
-		const today = moment(cookie.today, 'YYYY-MM-DD HH:mm:ss')
-		if (today.isSame(moment(), 'day')) win.webContents.send('set-check-in', cookie['manual-time'])
-		// Check in for first time
-		else {
-			const timeNow = moment();
-			const beforeTime = moment('07:55 am', 'hh:mm a');
-			const afterTime = moment('08:30 am', 'hh:mm a');
-			if (timeNow.isBetween(beforeTime, afterTime)) {
-				win.webContents.send('set-check-in', timeNow.format('hh:mm:ss a'))
-			}
-		}
-	}
 
 	// Create Tray Icon
 	const trayIconPath = path.join(__dirname, './assets/images/iconTemplate.png')

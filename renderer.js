@@ -110,9 +110,6 @@ function closeUpdateBox() {
 
 // Set custom time
 async function setTime(manualTime = moment().format('hh:mm:ss a')) {
-	// Set cookie
-	window.preload.cookie('manual-time', manualTime)
-
 	const initialTime = moment(manualTime, 'hh:mm:ss a');
 
 	// Check if saturday
@@ -144,6 +141,9 @@ updateRightButton.addEventListener("click", () => {
 	// Update time
 	else if (updateRightButton.textContent === 'Update') {
 		const manualTime = `${updateInput.value} ${updateAmPm.value}`
+
+		// Set cookie
+		window.preload.cookie('manual-time', manualTime)
 
 		// Set time to start now
 		setTime(manualTime)
@@ -210,18 +210,16 @@ new Promise((resolve, reject) => {
 }).catch(error => console.warn('Loading logs has some error', error))
 
 
+
 // --------------------------------------------
-// Listen First time check In / Existing time
+// First time set & Listen time
 // --------------------------------------------
-// window.preload.listenSetTime((event, time) => setTime(time))
+window.preload.getCookie('manual-time')
 window.preload.listenSetTime((event, time) => {
 	const splitTime = time.split(' ');
 	updateInput.value = splitTime[0]
 	updateAmPm.value = splitTime[1]
 	setTime(time)
-
-	// Set cookie
-	window.preload.cookie('manual-time', moment().format('hh:mm:ss a'))
 })
 
 
