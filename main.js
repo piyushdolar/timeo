@@ -122,10 +122,18 @@ async function createWindow() {
 
 	// Call notification
 	ipcMain.on('send-notification', async (event, object) => {
-		new Notification({
+		const notification = new Notification({
 			title: object.title,
 			body: object.body
-		}).show()
+		})
+
+		// Show notification
+		notification.show();
+
+		// Listen for the click event on the notification
+		notification.on('click', () => {
+			notification.close();
+		});
 	})
 
 	// Set Custom Log
