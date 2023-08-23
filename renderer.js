@@ -226,9 +226,9 @@ window.preload.listenSetTime((event, time) => {
 
 
 // --------------------------------------------
-// Open new window - report history
+// Open external browser on click
 // --------------------------------------------
-// let openReportWindow = document.getElementById("open-report-window");
-// openReportWindow.addEventListener("click", () => {
-// 	window.preload.openReportWindow()
-// })
+const githubIcon = document.getElementById("github-icon");
+githubIcon.addEventListener("click", () => {
+	window.preload.openExternalLink('https://github.com/piyushdolar/timeo/releases')
+})

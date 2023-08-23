@@ -14,6 +14,7 @@ contextBridge.exposeInMainWorld('preload', {
 	notification: (title, body) => ipcRenderer.send('send-notification', { title, body }),
 	log: (eventType) => ipcRenderer.send('set-log', eventType),
 	cookie: (name, value) => ipcRenderer.send('set-cookie', { name, value }),
+	openExternalLink: (link) => ipcRenderer.send('open-external-link', link),
 })
 
 // Update to HTML element

@@ -3,7 +3,7 @@
 // --------------------------------------------
 
 // Import electron
-const { app, BrowserWindow, ipcMain, Tray, Menu, Notification, powerMonitor, nativeImage, autoUpdater, dialog } = require('electron')
+const { app, BrowserWindow, ipcMain, Tray, Menu, Notification, powerMonitor, nativeImage, autoUpdater, dialog, shell } = require('electron')
 const path = require('path')
 const package = require('./package.json')
 
@@ -144,6 +144,11 @@ async function createWindow() {
 			})
 		}
 		await log.config(biscuit)
+	})
+
+	// Open external link
+	ipcMain.on('open-external-link', async (event, link) => {
+		shell.openExternal(link);
 	})
 
 	// open devtools
