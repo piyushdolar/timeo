@@ -12,12 +12,14 @@ if (navigator.onLine) {
 }
 
 // Version tag
+function capitalFirstLetter(name) {
+	const firstLetter = name.charAt(0)
+	const firstLetterCap = firstLetter.toUpperCase()
+	const remainingLetters = preload.name.slice(1)
+	return firstLetterCap + remainingLetters
+}
 let versionTag = document.getElementById('version-tag')
-const firstLetter = preload.name.charAt(0)
-const firstLetterCap = firstLetter.toUpperCase()
-const remainingLetters = preload.name.slice(1)
-const capitalizedWord = firstLetterCap + remainingLetters
-versionTag.innerHTML = capitalizedWord + ' v' + preload.version
+versionTag.innerHTML = capitalFirstLetter(preload.name) + ' v' + preload.version
 
 // --------------------------------------------
 // Countdown timer
@@ -214,13 +216,35 @@ new Promise((resolve, reject) => {
 // --------------------------------------------
 // First time set & Listen time
 // --------------------------------------------
-window.preload.getCookie('manual-time')
-window.preload.listenSetTime((event, time) => {
-	const splitTime = time.split(' ');
-	updateInput.value = splitTime[0]
-	updateAmPm.value = splitTime[1]
-	setTime(time)
-})
+new Promise((resolve, reject) => {
+	try {
+		resolve(preload.getCookie())
+	} catch (error) {
+		reject(error)
+	}
+}).then(cookie => {
+	if (cookie['manual-time']) {
+		const today = moment(cookie.today, 'YYYY-MM-DD HH:mm:ss')
+		if (today.isSame(moment(), 'day')) {
+			const splitTime = cookie['manual-time'].split(' ');
+			updateInput.value = splitTime[0]
+			updateAmPm.value = splitTime[1]
+			setTime(cookie['manual-time'])
+		} else {
+			const timeNow = moment();
+			const beforeTime = moment('07:55 am', 'hh:mm a');
+			const afterTime = moment('08:30 am', 'hh:mm a');
+			if (timeNow.isBetween(beforeTime, afterTime)) {
+				const cookieSetTime = timeNow.format('hh:mm:ss a')
+				updateInput.value = timeNow.format('hh:mm:ss')
+				updateAmPm.value = timeNow.format('a')
+				window.preload.cookie('manual-time', cookieSetTime)
+			}
+		}
+	} else {
+		// Other cookies here
+	}
+}).catch(error => console.warn('Loading logs has some error', error))
 
 
 // --------------------------------------------
@@ -229,4 +253,13 @@ window.preload.listenSetTime((event, time) => {
 const githubIcon = document.getElementById("github-icon");
 githubIcon.addEventListener("click", () => {
 	window.preload.openExternalLink('https://github.com/piyushdolar/timeo/releases')
+})
+
+
+// --------------------------------------------
+// Test notification
+// --------------------------------------------
+const notification = document.getElementById("notification-icon");
+notification.addEventListener("click", () => {
+	window.preload.notification(capitalFirstLetter(preload.name), `You are on v${preload.version}`)
 })

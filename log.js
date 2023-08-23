@@ -19,16 +19,12 @@ class Log {
 		this.#file = this.#dir + '/' + date + '.log'
 		this.#configFile = this.#dir + '/config.json'
 
-		this.createFiles()
+		this.create('Welcome')
 	}
 
-	// Create default files
-	createFiles() {
-		const $this = this
-		if (!fs.existsSync($this.#file)) {
-			const data = [{ eventType: 'File created', eventTime: moment() }]
-			fs.writeFileSync($this.#file, JSON.stringify(data));
-		}
+	async _handleError(context, error) {
+		console.error(`${context}: ${error.message}`);
+		$this.error(`${context}: ${error.message}`)
 	}
 
 	// Check if file is exist
@@ -46,100 +42,102 @@ class Log {
 				});
 			});
 		} catch (error) {
-			console.error('isFileExist(): ', error.message)
+			await this._handleError('isFileExist()', error);
+			return false
+		}
+	}
+
+	// Check file
+	async checkFile(filename) {
+		const $this = this
+		try {
+			return new Promise((resolve, reject) => {
+				fs.readFile(filename, 'utf-8', (error, data) => {
+					if (error) {
+						reject(error)
+					} else {
+						resolve(data)
+					}
+				});
+			}).then(data => data)
+		} catch (error) {
+			await this._handleError('checkFile()', error);
 			return false
 		}
 	}
 
 	// Write file
-	async writeFile(newObject) {
+	async writeFile(filename, content) {
 		const $this = this
 		try {
-			// Check if the file exists
+			return new Promise((resolve, reject) => {
+				fs.writeFile(filename, content, (error) => {
+					if (error) {
+						reject(error)
+						$this.error(`writeFile(): ${error}`)
+					} else {
+						resolve(content)
+					}
+				});
+			}).then(data => data)
+		} catch (error) {
+			await this._handleError('writeFile()', error);
+			return false
+		}
+	}
+
+	// Create log function
+	async create(event) {
+		try {
+			const $this = this
+			let object = {
+				eventType: event,
+				eventTime: moment()
+			}
 			const fileExists = await this.isFileExist()
 			if (fileExists) {
 				// Read existing content
-				const content = await fs.readFileSync($this.#file, 'utf-8')
+				const content = await $this.checkFile($this.#file)
 				const contentParsed = await JSON.parse(content)
-				await contentParsed.push(newObject)
+				await contentParsed.push(object)
 				const updatedContent = await JSON.stringify(contentParsed)
 
 				// Write the updated content back to the file
-				await fs.writeFileSync($this.#file, updatedContent);
+				await $this.writeFile($this.#file, updatedContent)
+				return object
 			} else {
 				const newContent = []
-				newContent.push(newObject)
+				newContent.push(object)
 				const stringify = await JSON.stringify(newContent)
 
 				// Create the file and write initial data
-				await fs.writeFileSync($this.#file, stringify);
+				return await $this.writeFile($this.#file, stringify)
 			}
-			return newObject
 		} catch (error) {
-			console.error('writeFile(): ', error)
-			this.error('writeFile(): ', error.message);
+			await this._handleError('create()', error);
 		}
 	}
 
-	// Write into file
-	async write(event) {
-		let object = {
-			eventType: event,
-			eventTime: moment()
-		}
-		const $this = this
-		const data = await new Promise((resolve, reject) => {
-			try {
-				resolve($this.writeFile(object))
-			} catch (error) {
-				reject('write(): ', error)
-			}
-		}).then(resolved => resolved)
-			.catch(error => {
-				console.error('write(): ', error.message)
-				$this.error(error.message)
-			})
-		return data
-	}
 
-	// Read file
-	async readFile(date) {
+	// Find and get data from the file
+	async history(date) { // date - DDMMYYYY(format)
 		const $this = this
-		// let defaultArray = []
 		try {
 			// Check if the file exists
 			let file = $this.#file
-			if (date) file = path.join(this.#dir, date)
+			if (date) file = path.join(this.#dir, `${date}.log`)
 			const fileExists = await $this.isFileExist(file)
 			if (fileExists) {
 				// Read existing content
-				const existingContent = await fs.readFileSync(file, 'utf-8');
+				const existingContent = await $this.checkFile(file);
 				return existingContent; // don't parse ipc need strings
 			} else {
 				return JSON.stringify([])
 			}
 		} catch (error) {
-			console.error(error)
-			this.error(`readFile(): ${error.message}`);
+			await this._handleError('history()', error);
 			return defaultArray;
 		}
-	}
-
-	// Find and get data from the file
-	async history(date) { // date - DDMMYYYY(format)
-		const $this = this
-		const data = await new Promise((resolve, reject) => {
-			try {
-				resolve($this.readFile(`${date}.log`))
-			} catch (error) {
-				reject('history(): ', error)
-			}
-		}).then(resolved => resolved)
-			.catch(error => {
-				console.error('history(): ', error.message)
-				$this.error(error.message)
-			})
-		return data
 	}
 
 	async config(config) {
@@ -155,7 +153,7 @@ class Log {
 				await fs.promises.writeFile($this.#configFile, JSON.stringify(fileData, null, 2), 'utf-8');
 			} else {
 				// Read the existing JSON data from the file
-				const existingData = await fs.promises.readFile($this.#configFile, 'utf-8');
+				const existingData = await $this.checkFile($this.#configFile);
 				if (existingData) {
 					fileData = JSON.parse(existingData);
 				}
@@ -168,30 +166,33 @@ class Log {
 			}
 			return fileData;
 		} catch (error) {
-			console.error('config(): ', error.message)
-			$this.error(error.message)
+			await this._handleError('config()', error);
 			return {};
 		}
 	}
 
 	// Write error log into file
 	async error(errorText) {
-		let file = `${date}.error.log`
+		try {
+			let file = `${date}.error.log`
 
-		// Prepare text
-		let text = `[${moment().format('hh:mm:ss a')}] ${errorText}\n`
+			// Prepare text
+			let text = `[${moment().format('hh:mm:ss a')}] ${errorText}\n`
 
-		// Check file exist
-		const fileExists = await this.isFileExist(file)
-		file = path.join(this.#dir, `${date}.error.log`)
-		// Create file if not exist
-		if (!fileExists) {
-			fs.promises.writeFile(file, text);
-		} else {
-			// Append to file
-			await fs.appendFile(file, text, function (error) {
-				if (error) console.error('error(): ', error);
-			});
+			// Check file exist
+			const fileExists = await this.isFileExist(file)
+			file = path.join(this.#dir, `${date}.error.log`)
+			// Create file if not exist
+			if (!fileExists) {
+				fs.promises.writeFile(file, text);
+			} else {
+				// Append to file
+				await fs.appendFile(file, text, function (error) {
+					if (error) console.error('error(): ', error);
+				});
+			}
+		} catch (error) {
+			await this._handleError('error()', error);
 		}
 	}
 }

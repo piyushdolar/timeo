@@ -42,7 +42,7 @@ if (env !== 'development') {
 	autoUpdater.setFeedURL({ url })
 	setInterval(() => {
 		autoUpdater.checkForUpdates()
-	}, 60000)
+	}, (60 * 1000)) // check for 60 seconds/1 minutes
 	autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
 		const dialogOpts = {
 			type: 'info',
@@ -107,17 +107,17 @@ async function createWindow() {
 
 	// Screen - lock
 	powerMonitor.on('lock-screen', async () => {
-		win.webContents.send('activity-read-logs', JSON.stringify(await log.write('System locked')))
+		win.webContents.send('activity-read-logs', JSON.stringify(await log.create('System locked')))
 	})
 
 	// Screen - unlock
 	powerMonitor.on('unlock-screen', async () => {
-		win.webContents.send('activity-read-logs', JSON.stringify(await log.write('System unlocked')))
+		win.webContents.send('activity-read-logs', JSON.stringify(await log.create('System unlocked')))
 	})
 
 	// Screen - shutdown
 	powerMonitor.on('shutdown', async () => {
-		win.webContents.send('activity-read-logs', JSON.stringify(await log.write('System shutdown')))
+		win.webContents.send('activity-read-logs', JSON.stringify(await log.create('System shutdown')))
 	})
 
 	// Call notification
@@ -139,7 +139,7 @@ async function createWindow() {
 	// Set Custom Log
 	ipcMain.on('set-log', async (event, eventType) => {
 		win.webContents.send('activity-read-logs', JSON.stringify(
-			await log.write(eventType)
+			await log.create(eventType)
 		))
 	})
 
@@ -174,38 +174,20 @@ async function createWindow() {
 ---------------------------------------------------- */
 app.whenReady().then(async () => {
 	// Invoke: First time read log from file
-	ipcMain.handle('activity-logs', async () => await log.history(moment().format('DDMMYYYY')))
+	ipcMain.handle('activity-logs', async () => await log.history())
 
 	// Invoke: History logs
 	ipcMain.handle('history-logs', async (event, date) => await log.history(date))
 
-	// Get Cookie -- this function is underdevelopment for future cookie usage
-	ipcMain.handle('get-cookie', async (event, cookieName) => {
-		const cookie = await log.config()
-		if (cookie[cookieName]) {
-			// check is today cookie
-			const today = moment(cookie.today, 'YYYY-MM-DD HH:mm:ss')
-			if (today.isSame(moment(), 'day')) {
-				win.webContents.send('set-check-in', cookie['manual-time'])
-			} else {
-				const timeNow = moment();
-				const beforeTime = moment('07:55 am', 'hh:mm a');
-				const afterTime = moment('08:30 am', 'hh:mm a');
-				if (timeNow.isBetween(beforeTime, afterTime)) {
-					const cookieSetTime = timeNow.format('hh:mm:ss a')
-					win.webContents.send('set-check-in', cookieSetTime)
-				}
-			}
-		} else {
-			return false
-		}
-	})
+	// Get Cookie
+	ipcMain.handle('get-cookie', async () => await log.config())
 
 	// Set Dock Image
 	if (process.platform === 'darwin') app.dock.setIcon(nativeImage.createFromPath('./assets/images/icon.png'))
 
 	// Create window
 	const win = await createWindow()
+
 
 	// Create Tray Icon
 	const trayIconPath = path.join(__dirname, './assets/images/iconTemplate.png')
