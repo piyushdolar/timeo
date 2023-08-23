@@ -1,9 +1,6 @@
 // File system
 const fs = require('fs')
 
-// OS
-const { homedir } = require('os')
-
 // Moment JS
 const moment = require('moment')
 const date = moment().format('DDMMYYYY')
@@ -117,15 +114,9 @@ class Log {
 			if (fileExists) {
 				// Read existing content
 				const existingContent = await fs.readFileSync(file, 'utf-8');
-				// const parsed = await JSON.parse(existingContent)
 				return existingContent; // don't parse ipc need strings
 			} else {
-				// // Create the file and write initial data
-				// const object = { eventType: 'File created', eventTime: moment() }
-				// defaultArray.push(object)
-				// await $this.writeFile(object, date)
-				// return JSON.stringify(defaultArray) // ipc needs stringify only
-				return []
+				return JSON.stringify([])
 			}
 		} catch (error) {
 			console.error(error)
@@ -162,22 +153,19 @@ class Log {
 			// Create file if not exist
 			if (!fileExists) {
 				await fs.promises.writeFile($this.#configFile, JSON.stringify(fileData, null, 2), 'utf-8');
+			} else {
+				// Read the existing JSON data from the file
+				const existingData = await fs.promises.readFile($this.#configFile, 'utf-8');
+				if (existingData) {
+					fileData = JSON.parse(existingData);
+				}
+				// Update fileData with the new config
+				if (config && config.name && config.value) {
+					fileData[config.name] = config.value;
+					// Write the updated data back to the file
+					await fs.promises.writeFile($this.#configFile, JSON.stringify(fileData, null, 2), 'utf-8');
+				}
 			}
-
-			// Read the existing JSON data from the file
-			const existingData = await fs.promises.readFile($this.#configFile, 'utf-8');
-			if (existingData) {
-				fileData = JSON.parse(existingData);
-			}
-
-			// Update fileData with the new config
-			if (config && config.name && config.value) {
-				fileData[config.name] = config.value;
-			}
-
-			// Write the updated data back to the file
-			await fs.promises.writeFile($this.#configFile, JSON.stringify(fileData, null, 2), 'utf-8');
-
 			return fileData;
 		} catch (error) {
 			console.error('config(): ', error.message)

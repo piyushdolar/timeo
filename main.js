@@ -41,7 +41,6 @@ if (env !== 'development') {
 	const url = `${server}/${package.author}/${package.name}/${process.platform}-${process.arch}/${app.getVersion()}`
 	autoUpdater.setFeedURL({ url })
 	setInterval(() => {
-		log.write(`Interval Started`)
 		autoUpdater.checkForUpdates()
 	}, 60000)
 	autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
