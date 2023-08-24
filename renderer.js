@@ -49,7 +49,7 @@ function updateCountdownDisplay() {
 	// Check and display alert for 11:55 AM for lunch time
 	if (flag.lunchTime && timeToLunch.asMilliseconds() <= 0) {
 		window.preload.notification('Lunch time!', "Hey! it's break time, it's a lunch time")
-		flag.lunchTime = true;
+		flag.lunchTime = false;
 	}
 
 	// Check if there's 30 minutes left and display an alert
