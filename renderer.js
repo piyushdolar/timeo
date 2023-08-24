@@ -27,61 +27,57 @@ versionTag.innerHTML = capitalFirstLetter(preload.name) + ' v' + preload.version
 // let startTime = moment('08:00:00 am', 'hh:mm:ss a');
 let endTime = moment('05:00:00 pm', 'hh:mm:ss a');
 const lunchTime = moment('11:55:00 am', 'h:mm:ss a');
+const remainingTimeElement = document.getElementById('remaining-time');
+let dateTime = document.getElementById('date-time')
 let flag = {
 	check30: true,
 	check15: true,
-	check5: true
+	check5: true,
+	lunchTime: true
 }
-setInterval(function () {
+function updateCountdownDisplay() {
+	const currentTime = moment();
+	const timeLeft = moment.duration(endTime.diff(currentTime));
+	const formattedTime = `${timeLeft.hours()}h ${timeLeft.minutes()}m ${timeLeft.seconds()}s`;
+
 	// Show clock
-	let dateTime = document.getElementById('date-time')
 	dateTime.textContent = moment().format("dddd, MMMM Do YYYY, h:mm:ss a")
 
-	const currentTime = moment()
+	// Notify for lunch time
+	const timeToLunch = moment.duration(lunchTime.diff(currentTime));
 
-	// Calculate the time differences
-	const timeLeft = moment.duration(endTime.diff(currentTime));
-
-	// Get the difference in hours, minutes, and seconds for both cases
-	const hours = Math.floor(timeLeft.asHours());
-	const minutes = timeLeft.minutes();
-	const seconds = timeLeft.seconds();
-
-	// Display the result in the element with id="demo"
-	const text = hours + "h " + minutes + "m " + seconds + "s ";
-	document.getElementById("remaining-time").textContent = text
-
-	// --------------- NOTIFICATION ----------------//
-	// Send notification for lunch
-
-	if (currentTime.isSame(lunchTime, 'seconds')) {
+	// Check and display alert for 11:55 AM for lunch time
+	if (flag.lunchTime && timeToLunch.asMilliseconds() <= 0) {
 		window.preload.notification('Lunch time!', "Hey! it's break time, it's a lunch time")
+		flag.lunchTime = true;
 	}
-	// Notify: Send notification before 30 minutes
-	if (flag.check30 && hours === 0 && minutes === 30 && seconds === 0) {
-		flag.check30 = false
+
+	// Check if there's 30 minutes left and display an alert
+	if (flag.check30 && timeLeft.asMinutes() <= 30 && timeLeft.asMilliseconds() > 0) {
 		window.preload.notification('Reminder', '30 minutes left for checkout')
-
-		// Notify: Send notification before 15 minutes
-	} else if (flag.check15 && hours === 0 && minutes === 15 && seconds === 0) {
-		flag.check15 = false
+		flag.check30 = false
+	}
+	// Check if there's 30 minutes left and display an alert
+	if (flag.check15 && timeLeft.asMinutes() <= 15 && timeLeft.asMilliseconds() > 0) {
 		window.preload.notification('Pack up', '15 minutes left for checkout')
-
-		// Notify: Send notification before 5 minutes
-	} else if (flag.check5 && hours === 0 && minutes === 5 && seconds === 0) {
-		flag.check5 = false
+		flag.check15 = false
+	}
+	// Check if there's 30 minutes left and display an alert
+	if (flag.check5 && timeLeft.asMinutes() <= 5 && timeLeft.asMilliseconds() > 0) {
 		window.preload.notification('Leaving time', '5 minutes left for checkout')
+		flag.check5 = false
 	}
-	// --------------- NOTIFICATION ----------------//
 
+	remainingTimeElement.textContent = timeLeft.asMilliseconds() < 0 ? 'OVERTIME!' : formattedTime;
 
-	// If the count down is finished, write some text
-	if (timeLeft.asMilliseconds() < 0) {
-		// clearInterval(timer);
-		document.getElementById("remaining-time").innerHTML = "OVERTIME!";
+	if (timeLeft.asMilliseconds() > 0) {
+		requestAnimationFrame(updateCountdownDisplay);
 	}
+}
+
+setInterval(function () {
+	updateCountdownDisplay()
 }, 1000);
-
 
 // --------------------------------------------
 // Update custom time
@@ -118,8 +114,15 @@ async function setTime(manualTime = moment().format('hh:mm:ss a')) {
 	let totalHour = 9
 	if (moment().day() === 6) totalHour = 4;
 
+	// Calculate and set time for countdown
 	const timeAfterTotalHours = initialTime.clone().add(totalHour, 'hours');
 	endTime = timeAfterTotalHours
+
+	// Clear alert flags
+	flag.check30 = true
+	flag.check15 = true
+	flag.check5 = true
+	flag.lunchTime = true
 }
 
 // Click - on update button
@@ -150,7 +153,10 @@ updateRightButton.addEventListener("click", () => {
 		// Set time to start now
 		setTime(manualTime)
 
-		// Set custom time
+		// Notify: time updated
+		window.preload.notification('Time set', 'Your time has been set')
+
+		// LOG: set custom time
 		window.preload.log('Custom check-in')
 
 		// Close form
