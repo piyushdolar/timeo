@@ -7,6 +7,9 @@ const { app, BrowserWindow, ipcMain, Tray, Menu, Notification, powerMonitor, nat
 const path = require('path')
 const package = require('./package.json')
 
+// Disable hardware acceleration
+app.disableHardwareAcceleration();
+
 // --------------------------------------------
 // LOGS Setup
 // --------------------------------------------
