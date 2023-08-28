@@ -13,8 +13,9 @@ contextBridge.exposeInMainWorld('preload', {
 	listenSetTime: (callback) => ipcRenderer.on('set-check-in', callback),
 	notification: (title, body) => ipcRenderer.send('send-notification', { title, body }),
 	log: (eventType) => ipcRenderer.send('set-log', eventType),
+	config: (name, value) => ipcRenderer.send('config', { name, value }),
+	getConfig: () => ipcRenderer.invoke('get-config'),
 	cookie: (name, value) => ipcRenderer.send('cookie', { name, value }),
-	getCookie: () => ipcRenderer.invoke('get-cookie'),
 	openExternalLink: (link) => ipcRenderer.send('open-external-link', link),
 })
 

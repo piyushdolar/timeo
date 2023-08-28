@@ -29,13 +29,14 @@ let endTime = moment('05:00:00 pm', 'hh:mm:ss a');
 const lunchTime = moment('11:55:00 am', 'h:mm:ss a');
 const remainingTimeElement = document.getElementById('remaining-time');
 let dateTime = document.getElementById('date-time')
-let flag = {
-	check30: true,
-	check15: true,
-	check5: true,
-	lunchTime: true
-}
+
 function updateCountdownDisplay() {
+	const flag = {
+		notifyAtLunch: sessionStorage.getItem('flag_notifyAtLunch') !== 'false',
+		notifyAt30: sessionStorage.getItem('flag_notifyAt30') !== 'false',
+		notifyAt15: sessionStorage.getItem('flag_notifyAt15') !== 'false',
+		notifyAt05: sessionStorage.getItem('flag_notifyAt05') !== 'false'
+	}
 	const currentTime = moment();
 	const timeLeft = moment.duration(endTime.diff(currentTime));
 	const formattedTime = `${timeLeft.hours()}h ${timeLeft.minutes()}m ${timeLeft.seconds()}s`;
@@ -47,25 +48,27 @@ function updateCountdownDisplay() {
 	const timeToLunch = moment.duration(lunchTime.diff(currentTime));
 
 	// Check and display alert for 11:55 AM for lunch time
-	if (flag.lunchTime && timeToLunch.asMilliseconds() <= 0) {
-		window.preload.notification('Lunch time!', "Hey! it's break time, it's a lunch time")
-		flag.lunchTime = false;
+	if (flag.notifyAtLunch && timeToLunch.asMilliseconds() <= 0) {
+		window.preload.notification('Lunch time!', "5 minutes to go")
+		sessionStorage.setItem('flag_notifyAtLunch', false)
 	}
 
 	// Check if there's 30 minutes left and display an alert
-	if (flag.check30 && timeLeft.asMinutes() <= 30 && timeLeft.asMilliseconds() > 0) {
+	if (flag.notifyAt30 && timeLeft.asMinutes() <= 30 && timeLeft.asMilliseconds() > 0) {
 		window.preload.notification('Reminder', '30 minutes left for checkout')
-		flag.check30 = false
+		sessionStorage.setItem('flag_notifyAt30', false)
 	}
+
 	// Check if there's 30 minutes left and display an alert
-	if (flag.check15 && timeLeft.asMinutes() <= 15 && timeLeft.asMilliseconds() > 0) {
+	if (flag.notifyAt15 && timeLeft.asMinutes() <= 15 && timeLeft.asMilliseconds() > 0) {
 		window.preload.notification('Pack up', '15 minutes left for checkout')
-		flag.check15 = false
+		sessionStorage.setItem('flag_notifyAt15', false)
 	}
+
 	// Check if there's 30 minutes left and display an alert
-	if (flag.check5 && timeLeft.asMinutes() <= 5 && timeLeft.asMilliseconds() > 0) {
+	if (flag.notifyAt05 && timeLeft.asMinutes() <= 5 && timeLeft.asMilliseconds() > 0) {
 		window.preload.notification('Leaving time', '5 minutes left for checkout')
-		flag.check5 = false
+		sessionStorage.setItem('flag_notifyAt05', false)
 	}
 
 	remainingTimeElement.textContent = timeLeft.asMilliseconds() < 0 ? 'OVERTIME!' : formattedTime;
@@ -75,6 +78,7 @@ function updateCountdownDisplay() {
 	}
 }
 
+// Start the interval
 setInterval(function () {
 	updateCountdownDisplay()
 }, 1000);
@@ -119,10 +123,10 @@ async function setTime(manualTime = moment().format('hh:mm:ss a')) {
 	endTime = timeAfterTotalHours
 
 	// Clear alert flags
-	flag.check30 = true
-	flag.check15 = true
-	flag.check5 = true
-	flag.lunchTime = true
+	flag.notifyAt30 = true
+	flag.notifyAt15 = true
+	flag.notifyAt05 = true
+	flag.notifyAtLunch = true
 }
 
 // Click - on update button
@@ -147,8 +151,8 @@ updateRightButton.addEventListener("click", () => {
 	else if (updateRightButton.textContent === 'Update') {
 		const manualTime = `${updateInput.value} ${updateAmPm.value}`
 
-		// Set cookie
-		window.preload.cookie('manual-time', manualTime)
+		// Set config
+		window.preload.config('manual-time', manualTime)
 
 		// Set time to start now
 		setTime(manualTime)
@@ -224,27 +228,27 @@ new Promise((resolve, reject) => {
 // --------------------------------------------
 new Promise((resolve, reject) => {
 	try {
-		resolve(preload.getCookie())
+		resolve(preload.getConfig())
 	} catch (error) {
 		reject(error)
 	}
-}).then(cookie => {
-	if (cookie['manual-time']) {
-		const today = moment(cookie.today, 'YYYY-MM-DD HH:mm:ss')
+}).then(config => {
+	if (config['manual-time']) {
+		const today = moment(config.today, 'YYYY-MM-DD HH:mm:ss')
 		if (today.isSame(moment(), 'day')) {
-			const splitTime = cookie['manual-time'].split(' ');
+			const splitTime = config['manual-time'].split(' ');
 			updateInput.value = splitTime[0]
 			updateAmPm.value = splitTime[1]
-			setTime(cookie['manual-time'])
+			setTime(config['manual-time'])
 		} else {
 			const timeNow = moment();
 			const beforeTime = moment('07:55 am', 'hh:mm a');
 			const afterTime = moment('08:30 am', 'hh:mm a');
 			if (timeNow.isBetween(beforeTime, afterTime)) {
-				const cookieSetTime = timeNow.format('hh:mm:ss a')
+				const configSetTime = timeNow.format('hh:mm:ss a')
 				updateInput.value = timeNow.format('hh:mm:ss')
 				updateAmPm.value = timeNow.format('a')
-				window.preload.cookie('manual-time', cookieSetTime)
+				window.preload.config('manual-time', configSetTime)
 			}
 		}
 	} else {

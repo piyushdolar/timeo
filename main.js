@@ -143,10 +143,10 @@ async function createWindow() {
 		))
 	})
 
-	// Set Cookie
-	ipcMain.on('cookie', async (event, biscuit) => {
+	// Set Config
+	ipcMain.on('config', async (event, cfg) => {
 		// Update today time if time is being set
-		if (biscuit.name === 'manual-time') {
+		if (cfg.name === 'manual-time') {
 			await log.config({
 				name: 'today',
 				value: moment().format('YYYY-MM-DD HH:mm:ss')
@@ -179,15 +179,14 @@ app.whenReady().then(async () => {
 	// Invoke: History logs
 	ipcMain.handle('history-logs', async (event, date) => await log.history(date))
 
-	// Get Cookie
-	ipcMain.handle('get-cookie', async () => await log.config())
+	// Get Config
+	ipcMain.handle('get-config', async () => await log.config())
 
 	// Set Dock Image
 	if (process.platform === 'darwin') app.dock.setIcon(nativeImage.createFromPath('./assets/images/icon.png'))
 
 	// Create window
 	const win = await createWindow()
-
 
 	// Create Tray Icon
 	const trayIconPath = path.join(__dirname, './assets/images/iconTemplate.png')

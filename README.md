@@ -22,7 +22,7 @@ An electron based repository for time management for office.
 
 ## Installation
 
-Download latest version of release and install it, make sure to disable your antivirus first in order to install application.
+Download latest version of release and install it, since the app code is unsigned make sure to disable your antivirus first in order to install application.
 
 ## Issues
 
