@@ -121,12 +121,6 @@ async function setTime(manualTime = moment().format('hh:mm:ss a')) {
 	// Calculate and set time for countdown
 	const timeAfterTotalHours = initialTime.clone().add(totalHour, 'hours');
 	endTime = timeAfterTotalHours
-
-	// Clear alert flags
-	flag.notifyAt30 = true
-	flag.notifyAt15 = true
-	flag.notifyAt05 = true
-	flag.notifyAtLunch = true
 }
 
 // Click - on update button

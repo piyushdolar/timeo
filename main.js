@@ -152,7 +152,7 @@ async function createWindow() {
 				value: moment().format('YYYY-MM-DD HH:mm:ss')
 			})
 		}
-		await log.config(biscuit)
+		await log.config(cfg)
 	})
 
 	// Open external link
