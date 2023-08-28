@@ -26,7 +26,7 @@ versionTag.innerHTML = capitalFirstLetter(preload.name) + ' v' + preload.version
 // --------------------------------------------
 // let startTime = moment('08:00:00 am', 'hh:mm:ss a');
 let endTime = moment('05:00:00 pm', 'hh:mm:ss a');
-const lunchTime = moment('11:55:00 am', 'h:mm:ss a');
+const lunchTime = moment('11:55:00 am', 'hh:mm:ss a');
 const remainingTimeElement = document.getElementById('remaining-time');
 let dateTime = document.getElementById('date-time')
 
@@ -48,7 +48,7 @@ function updateCountdownDisplay() {
 	const timeToLunch = moment.duration(lunchTime.diff(currentTime));
 
 	// Check and display alert for 11:55 AM for lunch time
-	if (flag.notifyAtLunch && timeToLunch.asMilliseconds() <= 0) {
+	if (flag.notifyAtLunch && timeToLunch.asMilliseconds() >= 0) {
 		window.preload.notification('Lunch time!', "5 minutes to go")
 		sessionStorage.setItem('flag_notifyAtLunch', false)
 	}
