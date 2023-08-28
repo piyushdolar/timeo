@@ -1,7 +1,7 @@
 {
 	"name": "timeo",
 	"description": "Time management tool for you",
-	"version": "1.5.8",
+	"version": "1.5.9",
 	"author": "piyushdolar",
 	"license": "ISC",
 	"main": "main.js",
