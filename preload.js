@@ -35,15 +35,7 @@ window.addEventListener('DOMContentLoaded', () => {
 		const body = document.body
 		body.style.backgroundImage = `url('file://${image}')`;
 	});
-
-	// Deleted bg image listen
-	ipcRenderer.on('deleted-background-image', (event, response) => {
-		if (response.success) {
-			location.reload()
-		}
-	});
-
-	ipcRenderer.on('image-download-complete', (event, response) => {
+	ipcRenderer.on('image-task-finished', (event, response) => {
 		if (response.success) {
 			location.reload()
 		}

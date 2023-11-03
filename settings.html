@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; img-src 'self' data: *" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Timeo - Report history</title>
+		<link href="./assets/css/bootstrap.min.css" rel="stylesheet" />
+		<link href="./assets/fontawesome/css/all.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="./assets/css/styles.css" />
+	</head>
+	<body class="vh-75 my-2">
+		<div class="container">
+			<nav aria-label="breadcrumb" class="my-2 d-flex justify-content-between">
+				<ol class="breadcrumb mb-0">
+					<li class="breadcrumb-item"><a href="./index.html" class="text-decoration-none">Dashboard</a></li>
+					<li class="breadcrumb-item active" aria-current="page">Settings</li>
+				</ol>
+			</nav>
+			<div class="card">
+				<div class="card-body p-2">
+					<div class="d-flex justify-content-center">
+						<div class="fs-2 text-primary mx-auto"><i class="fa fa-microchip me-1"></i> <span id="getCPUUsage">...</span></div>
+						<div class="fs-2 text-primary mx-auto"><i class="fa fa-memory me-1"></i> <span id="getProcessMemoryInfo">...</span></div>
+					</div>
+				</div>
+				<hr class="my-0" />
+				<div class="card-body p-2">
+					<div class="card-text">
+						<h6>Open Logs Folder and Look for <mark>timeo</mark> named folder to get the logs files list.</h6>
+						<button id="open-logs-folder" class="btn btn-outline-primary btn-sm"><i class="fa fa-folder-open me-1"></i>Open Logs</button>
+					</div>
+				</div>
+				<hr class="my-0" />
+				<div class="card-body p-2">
+					<div class="mb-2">
+						<label for="bg-file" class="form-label mb-1">Background Image Upload</label>
+						<div class="input-group">
+							<input class="form-control form-control-sm" type="file" id="bg-file" accept="image/*" />
+						</div>
+					</div>
+					<div class="mt-2">
+						<label for="bg-file" class="form-label mb-1">Background Image Fetch</label>
+						<div class="input-group">
+							<input id="image-upload-link" type="url" class="form-control form-control-sm" placeholder="Image URL" />
+							<button id="bg-file-btn-link" class="btn btn-outline-secondary btn-sm" type="button"><i class="fa fa-link me-1"></i>Fetch</button>
+						</div>
+					</div>
+					<button id="bg-file-delete" type="button" class="btn btn-outline-danger mt-2 btn-sm"><i class="fa fa-arrow-rotate-left me-1"></i>Reset Background</button>
+				</div>
+				<hr class="my-0" />
+				<div id="process-info" class="card-body p-2">
+					<div class="card-text">
+						<h6>OS Information</h6>
+						<small class="d-block text-secondary">Architecture: <span id="arch">...</span></small>
+						<small class="d-block text-secondary">Platform: <span id="platform">...</span></small>
+						<small class="d-block text-secondary">Version: <span id="getSystemVersion">...</span></small>
+					</div>
+					<div class="card-text mt-3">
+						<h6>Timeo Information</h6>
+						<small class="d-block text-secondary">Process ID: <span id="pid">...</span></small>
+						<small class="d-block text-secondary">Runner Type: <span id="type">...</span></small>
+						<small class="d-block text-secondary">Uptime: <span id="uptime">...</span></small>
+						<small class="d-block text-secondary">Creation Time: <span id="getCreationTime">...</span></small>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Renderer file -->
+		<script type="text/javascript" src="./assets/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="./settings.js"></script>
+	</body>
+</html>

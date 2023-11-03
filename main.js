@@ -6,9 +6,7 @@
 const { app, BrowserWindow, ipcMain, Tray, Menu, Notification, powerMonitor, nativeImage, autoUpdater, dialog, shell } = require('electron')
 const path = require('path')
 const package = require('./package.json')
-const fs = require('fs')
-const sharp = require('sharp');
-const https = require('https');
+const imageManager = require('./image');
 
 // Disable hardware acceleration
 // app.disableHardwareAcceleration();
@@ -202,69 +200,31 @@ async function createWindow() {
 		}
 	})
 
-	// Image Config
-	const destinationDir = app.getPath('userData');
-	const destinationFilePath = path.join(destinationDir, 'background.jpg');
-
 	// Get Image
 	ipcMain.on("get-background-image", async () => {
-		if (fs.existsSync(destinationFilePath)) {
-			win.webContents.send('background-image', destinationFilePath);
+		try {
+			const imagePath = await imageManager.getBackgroundImage();
+			if (imagePath) {
+				win.webContents.send('background-image', imagePath);
+			}
+		} catch (error) {
+			console.error('Error getting background image:', error);
 		}
-	})
+	});
 
 	// Upload image
 	ipcMain.on('change-background-image', async (event, image) => {
-		sharp(image)
-			.toFile(destinationFilePath, (err, info) => {
-				if (err) {
-					console.error('Error converting the image:', err);
-				} else {
-					console.log(info)
-					const sourceStream = fs.createReadStream(image);
-					const destinationStream = fs.createWriteStream(destinationFilePath);
-					sourceStream.on('error', (err) => {
-						console.error('Error reading the source file:', err);
-					});
-					destinationStream.on('error', (err) => {
-						console.error('Error writing the destination file:', err);
-					});
-					destinationStream.on('finish', () => {
-						console.log('File copied successfully.');
-					});
-					sourceStream.pipe(destinationStream);
-				}
-			});
-	})
+		imageManager.changeBackgroundImage(event, image);
+	});
 
 	// Set BG Image by URL
 	ipcMain.on('change-background-image-by-url', async (event, url) => {
-		https.get(url, (response) => {
-			if (response.statusCode === 200) {
-				const imageFile = fs.createWriteStream(destinationFilePath);
-				response.pipe(imageFile);
-
-				imageFile.on('finish', () => {
-					imageFile.close();
-					event.reply('image-download-complete', { success: true });
-				});
-
-				imageFile.on('error', (error) => {
-					event.reply('download-error', error.message);
-				});
-			} else {
-				event.reply('download-error', `HTTP status code: ${response.statusCode}`);
-			}
-		}).on('error', (error) => {
-			event.reply('download-error', error.message);
-		});
+		imageManager.changeBackgroundImageByUrl(event, url);
 	});
 
 	// Delete background image
 	ipcMain.on('delete-background-image', async (event) => {
-		fs.unlink(destinationFilePath, (error) => {
-			event.reply('deleted-background-image', { success: true });
-		});
+		imageManager.deleteBackgroundImage(event);
 	});
 
 	// open devtools
