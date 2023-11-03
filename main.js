@@ -92,6 +92,20 @@ const defaultWindowSetting = {
 
 async function createWindow() {
 	const win = await new BrowserWindow(defaultWindowSetting)
+
+	// Get Image - Call before html file loads
+	ipcMain.on("get-background-image", async () => {
+		try {
+			const imagePath = await imageManager.getBackgroundImage();
+			if (imagePath) {
+				win.webContents.send('background-image', imagePath);
+			}
+		} catch (error) {
+			console.error('Error getting background image:', error);
+		}
+	});
+
+	// Load HTML file
 	await win.loadFile('index.html')
 
 	// On minimize
@@ -199,18 +213,6 @@ async function createWindow() {
 			// contextId: process.contextId,
 		}
 	})
-
-	// Get Image
-	ipcMain.on("get-background-image", async () => {
-		try {
-			const imagePath = await imageManager.getBackgroundImage();
-			if (imagePath) {
-				win.webContents.send('background-image', imagePath);
-			}
-		} catch (error) {
-			console.error('Error getting background image:', error);
-		}
-	});
 
 	// Upload image
 	ipcMain.on('change-background-image', async (event, image) => {
