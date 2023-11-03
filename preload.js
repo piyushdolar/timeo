@@ -32,6 +32,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 	// Listen custom bg image has already or not
 	ipcRenderer.on('background-image', (event, image) => {
+		image = image.replace(/\\/g, '/');
 		document.body.style.backgroundImage = `url("${image}")`;
 	});
 	ipcRenderer.on('image-task-finished', (event, response) => {
