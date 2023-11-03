@@ -238,7 +238,9 @@ new Promise((resolve, reject) => {
 		reject(error)
 	}
 }).then(logs => {
-	setLogs(JSON.parse(logs))
+	if (logs.length > 0) {
+		setLogs(JSON.parse(logs))
+	}
 }).catch(error => console.warn('Loading logs has some error', error))
 
 
