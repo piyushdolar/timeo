@@ -26,6 +26,7 @@ class Log {
 	}
 
 	async _handleError(context, error) {
+		const $this = this
 		console.error(`${context}: ${error.message}`);
 		$this.error(`${context}: ${error.message}`)
 	}
