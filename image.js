@@ -53,7 +53,7 @@ function changeBackgroundImageByUrl(event, url) {
 				imageFile.on('finish', () => {
 					imageFile.close();
 					resolve();
-					event.reply('image-download-complete', { success: true });
+					event.reply('image-task-finished', { success: true });
 				});
 
 				imageFile.on('error', (error) => {
