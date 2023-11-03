@@ -97,15 +97,18 @@ class Log {
 				eventType: event,
 				eventTime: moment()
 			};
-
-			let content = await this.checkFile(this.#file);
-			let contentParsed = content ? JSON.parse(content) : [];
-
-			contentParsed.push(object);
-
-			const updatedContent = JSON.stringify(contentParsed);
-
-			await this.writeFile(this.#file, updatedContent);
+			if (await await this.isFileExist()) {
+				let content = await this.checkFile(this.#file);
+				let contentParsed = content ? JSON.parse(content) : [];
+				contentParsed.push(object);
+				const updatedContent = JSON.stringify(contentParsed);
+				await this.writeFile(this.#file, updatedContent);
+			} else {
+				// File doesn't exist, create the file and write the initial data
+				const initialData = [object];
+				const initialContent = JSON.stringify(initialData);
+				await this.writeFile(this.#file, initialContent);
+			}
 
 			return object;
 		} catch (error) {
