@@ -93,30 +93,21 @@ class Log {
 	// Create log function
 	async create(event) {
 		try {
-			const $this = this
-			let object = {
+			const object = {
 				eventType: event,
 				eventTime: moment()
-			}
-			const fileExists = await this.isFileExist()
-			if (fileExists) {
-				// Read existing content
-				const content = await $this.checkFile($this.#file)
-				const contentParsed = await JSON.parse(content)
-				await contentParsed.push(object)
-				const updatedContent = await JSON.stringify(contentParsed)
+			};
 
-				// Write the updated content back to the file
-				await $this.writeFile($this.#file, updatedContent)
-				return object
-			} else {
-				const newContent = []
-				newContent.push(object)
-				const stringify = await JSON.stringify(newContent)
+			let content = await this.checkFile(this.#file);
+			let contentParsed = content ? JSON.parse(content) : [];
 
-				// Create the file and write initial data
-				return await $this.writeFile($this.#file, stringify)
-			}
+			contentParsed.push(object);
+
+			const updatedContent = JSON.stringify(contentParsed);
+
+			await this.writeFile(this.#file, updatedContent);
+
+			return object;
 		} catch (error) {
 			await this._handleError('create()', error);
 		}
