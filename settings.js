@@ -55,6 +55,17 @@ imageUploadInput.addEventListener('change', (event) => {
 // Image URL Upload
 const imageUploadLink = document.getElementById('image-upload-link');
 const bgFileButtonLink = document.getElementById('bg-file-btn-link');
+const bgFileButtonCopy = document.getElementById('bg-btn-paste-link');
+
+bgFileButtonCopy.addEventListener('click', function () {
+	navigator.clipboard.readText()
+		.then(clipboardText => {
+			imageUploadLink.value = clipboardText
+		})
+		.catch(err => {
+			console.error('Failed to paste text: ' + err);
+		});
+});
 bgFileButtonLink.addEventListener('click', function () {
 	preload.changeBackgroundByURL(imageUploadLink.value)
 });
