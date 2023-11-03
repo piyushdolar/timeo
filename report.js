@@ -48,8 +48,9 @@ function getDatesForMonth(year, month) {
 const datesList = getDatesForMonth(moment().year(), moment().month());
 for (let i = 1; i < datesList.length; i++) {
 	let el = document.createElement("option");
+	const formattedValue = i < 10 ? `0${i}` : i.toString(); // Format with leading zero
 	el.textContent = i;
-	el.value = i;
+	el.value = formattedValue;
 	el.selected = i === moment().date() ? true : false;
 	dateSelectDay.appendChild(el);
 }

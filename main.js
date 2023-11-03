@@ -6,9 +6,12 @@
 const { app, BrowserWindow, ipcMain, Tray, Menu, Notification, powerMonitor, nativeImage, autoUpdater, dialog, shell } = require('electron')
 const path = require('path')
 const package = require('./package.json')
+const fs = require('fs')
+const sharp = require('sharp');
+const https = require('https');
 
 // Disable hardware acceleration
-app.disableHardwareAcceleration();
+// app.disableHardwareAcceleration();
 
 // --------------------------------------------
 // LOGS Setup
@@ -160,8 +163,109 @@ async function createWindow() {
 
 	// Open external link
 	ipcMain.on('open-external-link', async (event, link) => {
-		shell.openExternal(link);
+		await shell.openExternal(link);
 	})
+
+	// Open folder
+	ipcMain.on('open-logs-folder', async () => {
+		await shell.showItemInFolder(app.getPath('logs'));
+	})
+
+	// Get Process
+	ipcMain.handle('get-process-info', async () => {
+		return {
+			// crash: process.crash(),
+			// hang: process.hang(),
+			getCreationTime: process.getCreationTime(),
+			// getHeapStatistics: process.getHeapStatistics(),
+			// getBlinkMemoryInfo: process.getBlinkMemoryInfo(),
+			getProcessMemoryInfo: await process.getProcessMemoryInfo(),
+			getSystemMemoryInfo: process.getSystemMemoryInfo(),
+			getSystemVersion: process.getSystemVersion(),
+			getCPUUsage: process.getCPUUsage(),
+			// getIOCounters: process.getIOCounters(),
+			uptime: process.uptime(),
+			// argv: process.argv,
+			// execPath: process.execPath,
+			// env: process.env,
+			pid: process.pid,
+			arch: process.arch,
+			platform: process.platform,
+			// sandboxed: process.sandboxed,
+			// contextIsolated: process.contextIsolated,
+			type: process.type,
+			version: process.version,
+			versions: process.versions,
+			// mas: process.mas,
+			// windowsStore: process.windowsStore,
+			// contextId: process.contextId,
+		}
+	})
+
+	// Image Config
+	const destinationDir = app.getPath('userData');
+	const destinationFilePath = path.join(destinationDir, 'background.jpg');
+
+	// Get Image
+	ipcMain.on("get-background-image", async () => {
+		if (fs.existsSync(destinationFilePath)) {
+			win.webContents.send('background-image', destinationFilePath);
+		}
+	})
+
+	// Upload image
+	ipcMain.on('change-background-image', async (event, image) => {
+		sharp(image)
+			.toFile(destinationFilePath, (err, info) => {
+				if (err) {
+					console.error('Error converting the image:', err);
+				} else {
+					console.log(info)
+					const sourceStream = fs.createReadStream(image);
+					const destinationStream = fs.createWriteStream(destinationFilePath);
+					sourceStream.on('error', (err) => {
+						console.error('Error reading the source file:', err);
+					});
+					destinationStream.on('error', (err) => {
+						console.error('Error writing the destination file:', err);
+					});
+					destinationStream.on('finish', () => {
+						console.log('File copied successfully.');
+					});
+					sourceStream.pipe(destinationStream);
+				}
+			});
+	})
+
+	// Set BG Image by URL
+	ipcMain.on('change-background-image-by-url', async (event, url) => {
+		https.get(url, (response) => {
+			if (response.statusCode === 200) {
+				const imageFile = fs.createWriteStream(destinationFilePath);
+				response.pipe(imageFile);
+
+				imageFile.on('finish', () => {
+					imageFile.close();
+					event.reply('image-download-complete', { success: true });
+				});
+
+				imageFile.on('error', (error) => {
+					event.reply('download-error', error.message);
+				});
+			} else {
+				event.reply('download-error', `HTTP status code: ${response.statusCode}`);
+			}
+		}).on('error', (error) => {
+			event.reply('download-error', error.message);
+		});
+	});
+
+	// Delete background image
+	ipcMain.on('delete-background-image', async (event) => {
+		fs.unlink(destinationFilePath, (error) => {
+			event.reply('deleted-background-image', { success: true });
+		});
+	});
 
 	// open devtools
 	if (devtool) {
@@ -225,24 +329,6 @@ app.whenReady().then(async () => {
 		// win.show()
 	})
 })
-
-
-/* ---------------------------------------------------
-	WINDOW - Report window
-	report.html, report.js, report-preload.js
----------------------------------------------------- */
-// ipcMain.handle('open-report-window', async () => {
-// 	const reportWindow = new BrowserWindow(defaultWindowSetting);
-
-// 	const filePath = path.join(__dirname, 'report.html');
-// 	reportWindow.loadFile(filePath);
-
-// 	// open devtools
-// 	if (devtool) {
-// 		reportWindow.webContents.openDevTools()
-// 	}
-// })
-
 
 /* ---------------------------------------------------
 	WINDOW - Minimize window

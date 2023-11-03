@@ -6,6 +6,9 @@ const moment = require('moment')
 const date = moment().format('DDMMYYYY')
 
 // Path
+// MAC LOGs: /Users/<mac-username>/Library/Logs/timeo
+// MAC Settings: /Users/piyushdolar/Library/Application Support/timeo
+// Windows Logs: %APPDATA%/timeo
 const path = require('path')
 
 // Class

@@ -2,24 +2,27 @@
 console.info(preload.name + ' v' + preload.version)
 
 // Internet connection status
-let connectionStatus = document.getElementById('i-connection-status')
-if (navigator.onLine) {
-	connectionStatus.classList.add("text-success");
-	connectionStatus.innerHTML = 'Stable'
-} else {
-	connectionStatus.classList.add("text-danger");
-	connectionStatus.innerHTML = 'Unstable'
+function setConnectionStatus() {
+	const connectionStatus = document.getElementById('i-connection-status');
+	const statusText = navigator.onLine ? 'Stable' : 'Unstable';
+	connectionStatus.classList.add(navigator.onLine ? 'text-success' : 'text-danger');
+	connectionStatus.innerHTML = statusText;
 }
 
 // Version tag
+function setVersionTag() {
+	const versionTag = document.getElementById('version-tag')
+	versionTag.innerHTML = capitalFirstLetter(preload.name) + ' v' + preload.version
+}
+
+// Capital letter of word
 function capitalFirstLetter(name) {
 	const firstLetter = name.charAt(0)
 	const firstLetterCap = firstLetter.toUpperCase()
 	const remainingLetters = preload.name.slice(1)
 	return firstLetterCap + remainingLetters
 }
-let versionTag = document.getElementById('version-tag')
-versionTag.innerHTML = capitalFirstLetter(preload.name) + ' v' + preload.version
+
 
 // --------------------------------------------
 // Countdown timer
@@ -29,14 +32,17 @@ let endTime = moment('05:00:00 pm', 'hh:mm:ss a');
 const lunchTime = moment('11:55:00 am', 'hh:mm:ss a');
 const remainingTimeElement = document.getElementById('remaining-time');
 let dateTime = document.getElementById('date-time')
+let timeInterval;
 
 function updateCountdownDisplay() {
 	const flag = {
 		notifyAtLunch: sessionStorage.getItem('flag_notifyAtLunch') !== 'false',
 		notifyAt30: sessionStorage.getItem('flag_notifyAt30') !== 'false',
 		notifyAt15: sessionStorage.getItem('flag_notifyAt15') !== 'false',
-		notifyAt05: sessionStorage.getItem('flag_notifyAt05') !== 'false'
+		notifyAt05: sessionStorage.getItem('flag_notifyAt05') !== 'false',
+		notifyAt00: sessionStorage.getItem('flag_notifyAt00') !== 'false'
 	}
+
 	const currentTime = moment();
 	const timeLeft = moment.duration(endTime.diff(currentTime));
 	const formattedTime = `${timeLeft.hours()}h ${timeLeft.minutes()}m ${timeLeft.seconds()}s`;
@@ -49,42 +55,55 @@ function updateCountdownDisplay() {
 
 	// Check and display alert for 11:55 AM for lunch time
 	if (flag.notifyAtLunch && timeToLunch.asMilliseconds() >= 0) {
-		window.preload.notification('Lunch time!', "5 minutes to go")
+		notifyUser('Lunch time!', '5 minutes to go');
 		sessionStorage.setItem('flag_notifyAtLunch', false)
 	}
 
 	// Check if there's 30 minutes left and display an alert
 	if (flag.notifyAt30 && timeLeft.asMinutes() <= 30 && timeLeft.asMilliseconds() > 0) {
-		window.preload.notification('Reminder', '30 minutes left for checkout')
+		notifyUser('Reminder', '30 minutes left for checkout');
 		sessionStorage.setItem('flag_notifyAt30', false)
 	}
 
-	// Check if there's 30 minutes left and display an alert
+	// Check if there's 15 minutes left and display an alert
 	if (flag.notifyAt15 && timeLeft.asMinutes() <= 15 && timeLeft.asMilliseconds() > 0) {
-		window.preload.notification('Pack up', '15 minutes left for checkout')
+		notifyUser('Pack up', '15 minutes left for checkout');
 		sessionStorage.setItem('flag_notifyAt15', false)
 	}
 
-	// Check if there's 30 minutes left and display an alert
+	// Check if there's 05 minutes left and display an alert
 	if (flag.notifyAt05 && timeLeft.asMinutes() <= 5 && timeLeft.asMilliseconds() > 0) {
-		window.preload.notification('Leaving time', '5 minutes left for checkout')
+		notifyUser('Leaving time', '5 minutes left for checkout');
 		sessionStorage.setItem('flag_notifyAt05', false)
 	}
 
 	remainingTimeElement.textContent = timeLeft.asMilliseconds() < 0 ? 'OVERTIME!' : formattedTime;
+	if (remainingTimeElement.textContent === 'OVERTIME!') {
+		notifyUser("Leave Now!", "Uh-oh! Time's up! Your home misses you, so make a grand exit!");
+		clearInterval(timeInterval);
+	}
 
 	if (timeLeft.asMilliseconds() > 0) {
 		requestAnimationFrame(updateCountdownDisplay);
 	}
 }
 
+// Notify User
+function notifyUser(title, message) {
+	window.preload.notification(title, message);
+}
+
 // Start the interval
-setInterval(function () {
-	updateCountdownDisplay()
-}, 1000);
+function startCountDown() {
+	clearInterval(timeInterval);
+
+	timeInterval = setInterval(function () {
+		updateCountdownDisplay()
+	}, 1000);
+}
 
 // --------------------------------------------
-// Update custom time
+// Click: On Update
 // --------------------------------------------
 const updateLeftButton = document.getElementById("update-left-button")
 const updateInput = document.getElementById("update-input")
@@ -121,6 +140,7 @@ async function setTime(manualTime = moment().format('hh:mm:ss a')) {
 	// Calculate and set time for countdown
 	const timeAfterTotalHours = initialTime.clone().add(totalHour, 'hours');
 	endTime = timeAfterTotalHours
+	startCountDown();
 }
 
 // Click - on update button
@@ -162,7 +182,9 @@ updateRightButton.addEventListener("click", () => {
 	}
 });
 
-// Click - on cancel button
+// --------------------------------------------
+// Click: On Cancel
+// --------------------------------------------
 updateLeftButton.addEventListener("click", () => {
 	closeUpdateBox()
 });
@@ -172,29 +194,33 @@ updateLeftButton.addEventListener("click", () => {
 // Logs Read activity
 // --------------------------------------------
 function setLogs(logs) {
-	// Sort to the descending order by time
-	// logs.sort((a, b) => new Date(b.eventTime) - new Date(a.eventTime))
+	const logTableBody = document.getElementById('log-table-body');
+	const fragment = document.createDocumentFragment();
 
-	const logTableBody = document.getElementById('log-table-body')
-	// Create a new row element for each row in the table data
-	for (var i = 0; i < logs.length; i++) {
-		let row = document.createElement("tr");
-		// Create a new cell element for each column in the table data
+	for (let i = 0; i < logs.length; i++) {
+		const row = document.createElement("tr");
 
-		for (let j = 0; j < Object.keys(logs[i]).length; j++) {
-			let cell = document.createElement("td");
-			cellValue = logs[i][Object.keys(logs[i])[j]];
-			if (Object.keys(logs[i])[j] === 'eventTime') {
-				let checkDate = moment(logs[i][Object.keys(logs[i])[j]])
-				cellValue = checkDate.isValid() ? moment(logs[i][Object.keys(logs[i])[j]]).format('hh:mm:ss a') : cellValue
-				// cellValue += '<button type="button" class="btn btn-link btn-xs">Set</button>'
+		for (const key of Object.keys(logs[i])) {
+			const cell = document.createElement("td");
+			let cellValue = logs[i][key];
+
+			if (key === 'eventTime') {
+				const checkDate = moment(logs[i][key]);
+				cellValue = checkDate.isValid() ? moment(logs[i][key]).format('hh:mm:ss a') : cellValue;
 			}
-			cell.innerHTML = cellValue
+
+			cell.textContent = cellValue;
 			row.appendChild(cell);
 		}
-		logTableBody.prepend(row);
+
+		fragment.appendChild(row);
 	}
+
+	// Append all rows to the table at once
+	logTableBody.innerHTML = ''; // Clear the table
+	logTableBody.appendChild(fragment);
 }
+
 
 // Logs: Listen for latest logs
 window.preload.listenActivity((event, logs) => {
@@ -267,3 +293,8 @@ const notification = document.getElementById("notification-icon");
 notification.addEventListener("click", () => {
 	window.preload.notification(capitalFirstLetter(preload.name), `You are on v${preload.version}`)
 })
+
+// Initialization
+setConnectionStatus();
+setVersionTag();
+startCountDown();

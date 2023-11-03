@@ -2,27 +2,27 @@
 <html>
 	<head>
 		<meta charset="UTF-8" />
-		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; img-src 'self' data: *" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>Timeo - Time managed platform</title>
 		<link href="./assets/css/bootstrap.min.css" rel="stylesheet" />
-		<link href="./assets/css/fontawesome.all.min.css" rel="stylesheet" />
+		<link href="./assets/fontawesome/css/all.min.css" rel="stylesheet" />
 		<link rel="stylesheet" type="text/css" href="./assets/css/styles.css" />
 	</head>
 	<body class="container my-2 bg-white">
-		<!-- Header -->
 		<!---------------------------
 				INFO
 		---------------------------->
 		<div class="d-flex align-items-center">
 			<small class="fw-light">Internet connection: <span class="text-success" id="i-connection-status"></span></small>
 			<small class="text-body-secondary ms-auto fw-light"><small id="version-tag">Timeo v*</small></small>
-			<a href="#" id="github-icon" class="text-decoration-none ms-1 d-flex align-items-center">
-				<img src="./assets/images/git.png" alt="git-image" height="15" />
+			<a href="#" id="github-icon" class="text-decoration-none ms-1">
+				<i class="fa-brands fa-github text-black"></i>
 			</a>
-			<a href="#" id="notification-icon" class="text-decoration-none ms-1 d-flex align-items-center">
-				<img src="./assets/images/notification.png" alt="notification" height="15" />
+			<a href="#" id="notification-icon" class="text-decoration-none ms-1">
+				<i class="fa-solid fa-bell text-black"></i>
 			</a>
+			<a href="./settings.html" class="text-decoration-none ms-1 text-black"><i class="fa-solid fa-gear"></i></a>
 		</div>
 		<div class="d-flex mb-2">
 			<small class="fw-light" id="date-time">Loading...</small>
@@ -35,7 +35,7 @@
 		<!-- Body -->
 		<figure class="mb-2">
 			<blockquote class="blockquote">
-				<div class="display-6">Leaving in: <span id="remaining-time">00h 00m 00s</span></div>
+				<div class="display-6"><i class="fa-solid fa-stopwatch me-1"></i>Leaving in: <span id="remaining-time">00h 00m 00s</span></div>
 			</blockquote>
 			<figcaption class="blockquote-footer">Remaining time to complete it</figcaption>
 		</figure>
@@ -45,13 +45,13 @@
 		---------------------------->
 		<div class="input-group mb-2">
 			<!-- <span class="input-group-text" id="basic-addon3">Check In</span> -->
-			<button class="btn btn-outline-secondary" type="button" id="update-left-button" disabled>Check in</button>
+			<button class="btn btn-outline-secondary" type="button" id="update-left-button" disabled><i class="fa-solid fa-right-to-bracket me-1"></i>Check in</button>
 			<input type="text" id="update-input" class="form-control w-25" aria-label="Recipient's username" aria-describedby="button-addon2" value="08:00:00" placeholder="hh:mm:ss/h:m:s" disabled />
 			<select class="form-select" disabled id="update-am-pm">
 				<option value="am">AM</option>
 				<option value="pm">PM</option>
 			</select>
-			<button class="btn btn-outline-secondary" type="button" id="update-right-button">Edit</button>
+			<button class="btn btn-outline-secondary" type="button" id="update-right-button"><i class="fa fa-pen-to-square me-1"></i>Edit</button>
 			<!-- <button class="btn btn-outline-primary text-uppercase" type="button" disabled>report</button> -->
 		</div>
 
@@ -60,7 +60,10 @@
 		---------------------------->
 		<div class="card vh-50 overflow-auto">
 			<div class="card-body p-2">
-				<h5 class="card-title d-flex justify-content-between">Today's Activities <a href="./report.html" class="text-decoration-none fs-6" id="open-report-window">History</a></h5>
+				<h5 class="card-title d-flex justify-content-between">
+					<div><i class="fa-solid fa-arrow-trend-up me-2"></i>Today's Activities</div>
+					<a href="./report.html" class="text-decoration-none fs-6" id="open-report-window"><i class="fa-solid fa-clock-rotate-left me-1"></i>History</a>
+				</h5>
 				<h6 class="card-subtitle mb-2 text-body-secondary">Refer below log list for detailed activity.</h6>
 				<div class="card-text">
 					<table id="log-table" class="table table-hover table-borderless table-sm m-0">

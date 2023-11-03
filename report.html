@@ -2,11 +2,11 @@
 <html>
 	<head>
 		<meta charset="UTF-8" />
-		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; img-src 'self' data: *" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>Timeo - Report history</title>
 		<link href="./assets/css/bootstrap.min.css" rel="stylesheet" />
-		<link href="./assets/css/fontawesome.all.min.css" rel="stylesheet" />
+		<link href="./assets/fontawesome/css/all.min.css" rel="stylesheet" />
 		<link rel="stylesheet" type="text/css" href="./assets/css/styles.css" />
 	</head>
 	<body class="vh-75 my-2">
@@ -31,7 +31,7 @@
 			<div class="card">
 				<div class="card-body p-2">
 					<h5 class="card-title d-flex align-items-center">
-						History
+						<div><i class="fa-solid fa-clock-rotate-left me-1"></i>History</div>
 						<span class="badge bg-primary rounded-pill ms-1 ms-auto" id="history-count"></span>
 					</h5>
 					<h6 class="card-subtitle mb-2 text-body-secondary">Refer below log list for detailed activity for each day.</h6>
