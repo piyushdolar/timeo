@@ -2,6 +2,15 @@
 
 An electron based repository for time management for office.
 
+## Screenshots
+
+![timeo - dashboard](/timeo%20-%20dashboard.png)
+![timeo - history](/timeo%20-%20history.png)
+![timeo - notification](/timeo%20-%20notification.png)
+![timeo - settings](/timeo%20-%20settings.png)
+![timeo - update](/timeo%20-%20update.png)
+![timeo - change background](/timeo%20-%20change%20background.png)
+
 ## Table of Contents
 
 -   [Features](#features)
